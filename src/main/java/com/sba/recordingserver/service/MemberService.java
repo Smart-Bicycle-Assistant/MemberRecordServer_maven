@@ -53,4 +53,19 @@ public class MemberService {
             return "welcome " +optionalMember.get().getNickname();
         }
     }
+
+    public String checkDuplicateId(String id)
+    {
+        Optional<Member> optionalMember = memberRepository.findById(id);
+        if(optionalMember.isEmpty())
+        {
+            System.out.println(id + " is not in member db");
+            return "ok";
+        }
+        else
+        {
+            System.out.println(id + " is already taken");
+            return "duplicate";
+        }
+    }
 }
