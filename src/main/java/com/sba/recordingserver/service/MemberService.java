@@ -3,6 +3,7 @@ package com.sba.recordingserver.service;
 import com.sba.recordingserver.dto.MemberDto;
 import com.sba.recordingserver.dto.MemberLoginDto;
 import com.sba.recordingserver.dto.MemberPasswordChangeRequestDto;
+import com.sba.recordingserver.dto.ResponseDto;
 import com.sba.recordingserver.entity.Member;
 import com.sba.recordingserver.repository.MemberRepository;
 import com.sba.recordingserver.util.Util;
@@ -27,63 +28,63 @@ public class MemberService {
     private JavaMailSender emailSender;
 
 
-    public String registerMember(MemberDto member) {
+    public ResponseDto registerMember(MemberDto member) {
         Optional<Member> optionalMember = memberRepository.findById(member.getId());
         if(optionalMember.isPresent())
         {
             System.out.println(member.getId()+" is already taken");
-            return "That id is already taken";
+            return new ResponseDto("That id is already taken", 406);
         }
         else
         {
             memberRepository.save(member.toEntity());
             System.out.println("register done");
-            return "Register Success";
+            return new ResponseDto("Register Success",200);
         }
     }
 
 
-    public String handleLoginRequest(MemberLoginDto loginRequest) {
+    public ResponseDto handleLoginRequest(MemberLoginDto loginRequest) {
         Optional<Member> optionalMember = memberRepository.findById(loginRequest.getId());
         if(optionalMember.isEmpty())
         {
             System.out.println(loginRequest.getId() + " is not in member db");
-            return "no such id";
+            return new ResponseDto("no such id",406);
         }
         else if(!optionalMember.get().getPassword().equals(loginRequest.getPassword()))
         {
             System.out.println("invalid password " + optionalMember.get().getPassword() + " : " + loginRequest.getPassword());
-            return "invalid password";
+            return new ResponseDto("invalid password",406);
         }
         else
         {
             System.out.println("login request for "+loginRequest.getId() + " successfully done");
-            return "welcome " +optionalMember.get().getNickname();
+            return new ResponseDto("welcome " +optionalMember.get().getNickname(),200);
         }
     }
 
-    public String checkDuplicateId(String id)
+    public ResponseDto checkDuplicateId(String id)
     {
         Optional<Member> optionalMember = memberRepository.findById(id);
         if(optionalMember.isEmpty())
         {
             System.out.println(id + " is not in member db");
-            return "ok";
+            return new ResponseDto("ok",200);
         }
         else
         {
             System.out.println(id + " is already taken");
-            return "duplicate";
+            return new ResponseDto("duplicate",406);
         }
     }
 
-    public String resetPassword(String id)
+    public ResponseDto resetPassword(String id)
     {
         Optional<Member> optionalMember = memberRepository.findById(id);
         if(optionalMember.isEmpty())
         {
             System.out.println(id+" is not in member db");
-            return "no such id";
+            return new ResponseDto("no such id",406);
         }
         else
         {
@@ -100,17 +101,17 @@ public class MemberService {
             member.setPassword(password);
             memberRepository.save(member);
             emailSender.send(message);
-            return "Your new password has been sent to your email";
+            return new ResponseDto("Your new password has been sent to your email",200);
         }
     }
 
-    public String changePassword(MemberPasswordChangeRequestDto request)
+    public ResponseDto changePassword(MemberPasswordChangeRequestDto request)
     {
         Optional<Member> optionalMember = memberRepository.findById(request.getId());
         if(optionalMember.isEmpty())
         {
             System.out.println(request.getId()+" is not in member db");
-            return "no such id";
+            return new ResponseDto("no such id",406);
         }
         else
         {
@@ -118,18 +119,18 @@ public class MemberService {
             if(!member.getPassword().equals(request.getPassword())) //wrong password
             {
                 System.out.println("invalid password " + optionalMember.get().getPassword() + " : " + request.getPassword());
-                return "invalid password";
+                return new ResponseDto("invalid password",406);
             }
             else if(member.getPassword().equals(request.getNewPassword())) //new password old password same
             {
                 System.out.println("new password old password same" + optionalMember.get().getPassword() + " : " + request.getNewPassword());
-                return "new password is same as before";
+                return new ResponseDto("new password is same as before",406);
             }
             else
             {
                 member.setPassword(request.getNewPassword());
                 memberRepository.save(member);
-                return "your new password has been successfully changed";
+                return new ResponseDto("your new password has been successfully changed",200);
             }
         }
     }
