@@ -22,4 +22,13 @@ public class MemberDto {
         member.setEmail(this.email);
         return member;
     }
+    public Member toNewEntity() {
+        Member member = new Member();
+        member.setId(this.id);
+        member.setPassword(this.password);
+        member.setNickname(this.nickname);
+        member.setEmail(this.email);
+        member.setBicycleNumber(0);
+        return member;
+    }
 }

@@ -19,5 +19,6 @@ public class Member {
     @Column private String password;
     @Column private String nickname;
     @Column private String email;
+    @Column private Integer bicycleNumber;
 
 }

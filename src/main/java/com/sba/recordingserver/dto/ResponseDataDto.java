@@ -7,12 +7,14 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class ResponseDto {
+public class ResponseDataDto<T> {
     private String message;
     private int status;
-    public ResponseDto(String response, int status)
+    private T data;
+    public ResponseDataDto(String message, int status, T data)
     {
-        this.message = response;
+        this.message = message;
         this.status = status;
+        this.data = data;
     }
 }
