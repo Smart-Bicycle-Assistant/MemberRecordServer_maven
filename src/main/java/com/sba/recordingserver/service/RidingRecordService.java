@@ -2,7 +2,7 @@ package com.sba.recordingserver.service;
 
 import com.sba.recordingserver.dto.ResponseDataDto;
 import com.sba.recordingserver.dto.ResponseNoDataDto;
-import com.sba.recordingserver.dto.RidingLogPostDto;
+import com.sba.recordingserver.dto.RidingRecordPostDto;
 import com.sba.recordingserver.dto.RidingRecordSimplifiedDto;
 import com.sba.recordingserver.entity.RidingRecord;
 import com.sba.recordingserver.repository.RidingRecordRepository;
@@ -73,7 +73,7 @@ public class RidingRecordService {
     }
 
     @Transactional
-    public ResponseNoDataDto postRidingLog(RidingLogPostDto postRequest)
+    public ResponseNoDataDto postRidingRecord(RidingRecordPostDto postRequest)
     {
         ridingRecordRepository.save(postRequest.toEntity());
         return new ResponseNoDataDto("OK",200);

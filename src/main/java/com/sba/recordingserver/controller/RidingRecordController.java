@@ -2,7 +2,7 @@ package com.sba.recordingserver.controller;
 
 import com.sba.recordingserver.dto.ResponseDataDto;
 import com.sba.recordingserver.dto.ResponseNoDataDto;
-import com.sba.recordingserver.dto.RidingLogPostDto;
+import com.sba.recordingserver.dto.RidingRecordPostDto;
 import com.sba.recordingserver.dto.RidingRecordSimplifiedDto;
 import com.sba.recordingserver.entity.RidingRecord;
 import com.sba.recordingserver.service.RidingRecordService;
@@ -33,8 +33,8 @@ public class RidingRecordController {
     }
 
     @PostMapping(value= "/riding_record/post")
-    public ResponseNoDataDto postRecord(@RequestBody RidingLogPostDto postRequest) {
-        return ridingRecordService.postRidingLog(postRequest);
+    public ResponseNoDataDto postRecord(@RequestBody RidingRecordPostDto postRequest) {
+        return ridingRecordService.postRidingRecord(postRequest);
     }
 
 }

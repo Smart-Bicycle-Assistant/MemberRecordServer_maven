@@ -8,7 +8,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class RidingLogPostDto {
+public class RidingRecordPostDto {
     private String memberId;
     private Integer bicycleNo;
     private Long ridingTime;
