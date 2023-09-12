@@ -17,7 +17,7 @@ public class ManagementRecord {
     private Long id;
     @Column private String memberId;
     @Column private Integer bicycleNo;
-    @Column private Integer tyre;
+    @Column private Integer tire;
     @Column private Integer brakes;
     @Column private Integer chain;
     @Column private Integer gears;
