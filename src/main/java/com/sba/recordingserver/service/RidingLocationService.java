@@ -3,9 +3,9 @@ package com.sba.recordingserver.service;
 import com.sba.recordingserver.dto.ResponseDataDto;
 import com.sba.recordingserver.dto.RidingRecordSimplifiedDto;
 import com.sba.recordingserver.dto.UserLocationDto;
-import com.sba.recordingserver.dto.UserLocationWithDistanceDto;
 import com.sba.recordingserver.entity.RidingLocation;
 import com.sba.recordingserver.entity.RidingLocationWithDistance;
+import com.sba.recordingserver.repository.RidingCoordinateMemoryRepository;
 import com.sba.recordingserver.repository.RidingLocationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,9 +19,10 @@ import java.util.stream.Collectors;
 public class RidingLocationService {
     @Autowired
     RidingLocationRepository ridingLocationRepository;
-
+    RidingCoordinateMemoryRepository ridingCoordinateMemoryRepository = RidingCoordinateMemoryRepository.getInstance();
     public ResponseDataDto<List<UserLocationDto>> saveLocationAndReturnNearbyUsers(String memberId, Double longitude, Double latitude)
     {
+        ridingCoordinateMemoryRepository.save(memberId,longitude,latitude);
 
         Optional<RidingLocation> optionalRidingLocation = ridingLocationRepository.findById(memberId);
         if(optionalRidingLocation.isPresent())

@@ -16,8 +16,10 @@ public class RidingRecordPostDto {
     private Double avgSpeed;
     private Double maxSpeed;
     private Long ridingDuration;
-    private String map;
-    public RidingRecord toEntity() {
+    //no map
+
+
+    public RidingRecord toEntity(String map) {
         RidingRecord ridingRecord = new RidingRecord();
         ridingRecord.setMemberId(memberId);
         ridingRecord.setBicycleNo(bicycleNo);

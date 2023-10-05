@@ -2,8 +2,6 @@ package com.sba.recordingserver.controller;
 
 import com.sba.recordingserver.dto.ResponseDataDto;
 import com.sba.recordingserver.dto.UserLocationDto;
-import com.sba.recordingserver.dto.UserLocationWithDistanceDto;
-import com.sba.recordingserver.entity.RidingLocation;
 import com.sba.recordingserver.service.RidingLocationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

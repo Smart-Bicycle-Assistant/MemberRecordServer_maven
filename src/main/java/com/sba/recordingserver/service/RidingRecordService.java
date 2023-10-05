@@ -5,6 +5,7 @@ import com.sba.recordingserver.dto.ResponseNoDataDto;
 import com.sba.recordingserver.dto.RidingRecordPostDto;
 import com.sba.recordingserver.dto.RidingRecordSimplifiedDto;
 import com.sba.recordingserver.entity.RidingRecord;
+import com.sba.recordingserver.repository.RidingCoordinateMemoryRepository;
 import com.sba.recordingserver.repository.RidingRecordRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +18,12 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-@AllArgsConstructor
 public class RidingRecordService {
+
 
     @Autowired
     RidingRecordRepository ridingRecordRepository;
+    RidingCoordinateMemoryRepository ridingCoordinateMemoryRepository = RidingCoordinateMemoryRepository.getInstance();
 
     @Transactional
     public ResponseDataDto<List<RidingRecordSimplifiedDto>> getWholeRidingRecord(String memberId, Integer bicycleNo)
@@ -75,7 +77,9 @@ public class RidingRecordService {
     @Transactional
     public ResponseNoDataDto postRidingRecord(RidingRecordPostDto postRequest)
     {
-        ridingRecordRepository.save(postRequest.toEntity());
+
+        ridingRecordRepository.save(postRequest.toEntity(ridingCoordinateMemoryRepository.findById(postRequest.getMemberId())));
+        ridingCoordinateMemoryRepository.remove(postRequest.getMemberId());
         return new ResponseNoDataDto("OK",200);
     }
 }
