@@ -1,7 +1,8 @@
 package com.sba.recordingserver.controller;
 
 import com.sba.recordingserver.dto.ResponseDataDto;
-import com.sba.recordingserver.dto.UserLocationDto;
+import com.sba.recordingserver.dto.ResponseNoDataDto;
+import com.sba.recordingserver.dto.UserLocationResultDto;
 import com.sba.recordingserver.service.RidingLocationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,8 +17,12 @@ public class RidingLocationController {
     RidingLocationService ridingLocationService;
 
     @GetMapping(value = "/riding_location/post_and_get")
-    public ResponseDataDto<List<UserLocationDto>> postLocationAndGetNearbyUsers(@RequestParam String memberId, @RequestParam Double longitude, @RequestParam Double latitude)
+    public ResponseDataDto<List<UserLocationResultDto>> postLocationAndGetNearbyUsers(@RequestParam String memberId, @RequestParam Double longitude, @RequestParam Double latitude, @RequestParam Boolean packMode, @RequestParam Double speed)
     {
-        return ridingLocationService.saveLocationAndReturnNearbyUsers(memberId, longitude, latitude);
+        return ridingLocationService.saveLocationAndReturnNearbyUsers(memberId, longitude, latitude, packMode, speed);
+    }
+    @GetMapping(value = "/riding_location/startRiding")
+    public ResponseNoDataDto prepareForStartRiding(@RequestParam String memberId) {
+        return ridingLocationService.checkDirtyMemoryRepository(memberId);
     }
 }

@@ -4,15 +4,20 @@ package com.sba.recordingserver.repository;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class RidingCoordinateMemoryRepository {
-    private static final RidingCoordinateMemoryRepository instance = new RidingCoordinateMemoryRepository();
+    private static RidingCoordinateMemoryRepository instance = null;
 
-    Map<String, List<Coordinate>> memoryRepository;
+    Map<String, List<Coordinate>> memoryRepository = new HashMap<>();
 
     public static RidingCoordinateMemoryRepository getInstance() {
+        if (instance == null) {
+            instance = new RidingCoordinateMemoryRepository();
+            System.out.println("created MemoryRepository instance");
+        }
         return instance;
     }
 
@@ -31,6 +36,8 @@ public class RidingCoordinateMemoryRepository {
         memoryRepository.remove(id);
     }
     public String findById(String id) {
+        if(!memoryRepository.containsKey(id))
+            return null;
         List<Coordinate> list = memoryRepository.get(id);
         String json = new Gson().toJson(list);
         memoryRepository.remove(id);

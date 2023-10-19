@@ -5,6 +5,7 @@ import com.sba.recordingserver.entity.Bicycle;
 import com.sba.recordingserver.entity.Member;
 import com.sba.recordingserver.repository.BicycleRepository;
 import com.sba.recordingserver.repository.MemberRepository;
+import com.sba.recordingserver.security.TokenProvider;
 import com.sba.recordingserver.util.Util;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,9 @@ public class MemberService {
 
     @Autowired
     private final BicycleRepository bicycleRepository;
+
+    @Autowired
+    private TokenProvider tokenProvider;
 
     private JavaMailSender emailSender;
 
@@ -47,22 +51,24 @@ public class MemberService {
 
 
 
-    public ResponseNoDataDto handleLoginRequest(MemberLoginDto loginRequest) {
+    public ResponseDataDto<MemberLoginResultDto> handleLoginRequest(MemberLoginDto loginRequest) {
         Optional<Member> optionalMember = memberRepository.findById(loginRequest.getId());
+        MemberLoginResultDto memberLoginResultDto = null;
         if(optionalMember.isEmpty())
         {
             System.out.println(loginRequest.getId() + " is not in member db");
-            return new ResponseNoDataDto("no such id",406);
+            return new ResponseDataDto("no such id",406, null);
         }
         else if(!optionalMember.get().getPassword().equals(loginRequest.getPassword()))
         {
             System.out.println("invalid password " + optionalMember.get().getPassword() + " : " + loginRequest.getPassword());
-            return new ResponseNoDataDto("invalid password",406);
+            return new ResponseDataDto("invalid password",406,null);
         }
         else
         {
             System.out.println("login request for "+loginRequest.getId() + " successfully done");
-            return new ResponseNoDataDto("welcome " +optionalMember.get().getNickname(),200);
+            final String token = tokenProvider.create(optionalMember.get());
+            return new ResponseDataDto("OK",200,new MemberLoginResultDto(optionalMember.get().getId(),optionalMember.get().getNickname(), optionalMember.get().getEmail(), token));
         }
     }
 

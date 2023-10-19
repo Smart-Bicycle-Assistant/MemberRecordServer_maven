@@ -33,6 +33,7 @@ public class RidingLocation {
     @Column private String id;
     @Column private Double longitude;
     @Column private Double latitude;
+    @Column private Double speed;
 
 
     public RidingLocation() {
