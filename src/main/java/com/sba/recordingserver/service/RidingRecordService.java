@@ -77,8 +77,11 @@ public class RidingRecordService {
     @Transactional
     public ResponseNoDataDto postRidingRecord(RidingRecordPostDto postRequest)
     {
-
-        ridingRecordRepository.save(postRequest.toEntity(ridingCoordinateMemoryRepository.findById(postRequest.getMemberId())));
+//        System.out.println(ridingCoordinateMemoryRepository.findById(postRequest.getMemberId()));
+        String map = ridingCoordinateMemoryRepository.findById(postRequest.getMemberId());
+        RidingRecord entity = postRequest.toEntity("");
+        entity.setMap(map);
+        ridingRecordRepository.save(entity);
         ridingCoordinateMemoryRepository.remove(postRequest.getMemberId());
         return new ResponseNoDataDto("OK",200);
     }

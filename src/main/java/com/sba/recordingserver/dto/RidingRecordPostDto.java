@@ -29,6 +29,7 @@ public class RidingRecordPostDto {
         ridingRecord.setMaxSpeed(maxSpeed);
         ridingRecord.setRidingDuration(ridingDuration);
         ridingRecord.setMap(map);
+        System.out.println("toEntity : " + ridingRecord.getMap());
         return ridingRecord;
     }
 }
