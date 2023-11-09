@@ -17,6 +17,6 @@ public class Bicycle {
     @Column private Long id;
     @Column private String ownerId;
     @Column private String bicycleName;
-    @Column private String bicycleImage;
+    @Lob private String bicycleImage;
 
 }

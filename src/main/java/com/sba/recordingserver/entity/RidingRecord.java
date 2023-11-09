@@ -22,6 +22,6 @@ public class RidingRecord {
     @Column private Double avgSpeed;
     @Column private Double maxSpeed;
     @Column private Long ridingDuration;
-    @Column private String map;
+    @Lob private String map;
 
 }
