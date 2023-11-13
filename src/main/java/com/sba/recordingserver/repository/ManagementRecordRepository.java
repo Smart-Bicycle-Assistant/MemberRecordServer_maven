@@ -10,6 +10,6 @@ import java.util.List;
 
 public interface ManagementRecordRepository extends JpaRepository<ManagementRecord,Long> {
 
-    @Query("select m from ManagementRecord m where m.memberId = :memberId and m.bicycleNo = :bicycleNo")
-    List<ManagementRecord> findMatchingRecord(@Param("memberId") String memberId, @Param("bicycleNo") Integer bicycleNo);
+    @Query("select m from ManagementRecord m where m.memberId = :memberId and m.bicycleId = :bicycleId")
+    List<ManagementRecord> findMatchingRecord(@Param("memberId") String memberId, @Param("bicycleId") Long bicycleId);
 }

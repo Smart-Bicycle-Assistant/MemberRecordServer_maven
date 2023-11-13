@@ -16,7 +16,7 @@ public class RidingRecord {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column private String memberId;
-    @Column private Integer bicycleNo;
+    @Column private Long bicycleId;
     @Column private Long ridingTime;
     @Column private Double distance;
     @Column private Double avgSpeed;

@@ -12,7 +12,7 @@ public class ManagementRecordPostDto {
 //    aiaiaiaiaiaiaiaiaiaiai aiai
 
     String memberId;
-    Integer bicycleNo;
+    Long bicycleId;
     Integer tire;
     Integer brakes;
     Integer chain;
@@ -22,7 +22,7 @@ public class ManagementRecordPostDto {
     public ManagementRecord toEntity() {
         ManagementRecord managementRecord = new ManagementRecord();
         managementRecord.setMemberId(memberId);
-        managementRecord.setBicycleNo(bicycleNo);
+        managementRecord.setBicycleId(bicycleId);
         managementRecord.setTire(tire);
         managementRecord.setBrakes(brakes);
         managementRecord.setChain(chain);

@@ -16,7 +16,7 @@ public class ManagementRecord {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column private String memberId;
-    @Column private Integer bicycleNo;
+    @Column private Long bicycleId;
     @Column private Integer tire;
     @Column private Integer brakes;
     @Column private Integer chain;

@@ -10,7 +10,7 @@ import lombok.ToString;
 @ToString
 public class RidingRecordPostDto {
     private String memberId;
-    private Integer bicycleNo;
+    private Long bicycleId;
     private Long ridingTime;
     private Double distance;
     private Double avgSpeed;
@@ -22,7 +22,7 @@ public class RidingRecordPostDto {
     public RidingRecord toEntity(String map) {
         RidingRecord ridingRecord = new RidingRecord();
         ridingRecord.setMemberId(memberId);
-        ridingRecord.setBicycleNo(bicycleNo);
+        ridingRecord.setBicycleId(bicycleId);
         ridingRecord.setRidingTime(ridingTime);
         ridingRecord.setDistance(distance);
         ridingRecord.setAvgSpeed(avgSpeed);

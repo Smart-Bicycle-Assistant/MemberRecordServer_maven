@@ -7,7 +7,6 @@ import com.sba.recordingserver.dto.RidingRecordSimplifiedDto;
 import com.sba.recordingserver.entity.RidingRecord;
 import com.sba.recordingserver.repository.RidingCoordinateMemoryRepository;
 import com.sba.recordingserver.repository.RidingRecordRepository;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,9 +25,9 @@ public class RidingRecordService {
     RidingCoordinateMemoryRepository ridingCoordinateMemoryRepository = RidingCoordinateMemoryRepository.getInstance();
 
     @Transactional
-    public ResponseDataDto<List<RidingRecordSimplifiedDto>> getWholeRidingRecord(String memberId, Integer bicycleNo)
+    public ResponseDataDto<List<RidingRecordSimplifiedDto>> getWholeRidingRecord(String memberId, Long bicycleId)
     {
-        List<RidingRecord> dbResult =  ridingRecordRepository.findMatchingRecord(memberId,bicycleNo);
+        List<RidingRecord> dbResult =  ridingRecordRepository.findMatchingRecord(memberId,bicycleId);
         if(dbResult.size() == 0)
         {
             return new ResponseDataDto<>("No Matching Data",204,null);
@@ -40,9 +39,9 @@ public class RidingRecordService {
     }
 
     @Transactional
-    public ResponseDataDto<List<RidingRecordSimplifiedDto>> getRidingRecordAfter(String memberId, Integer bicycleNo, Long time)
+    public ResponseDataDto<List<RidingRecordSimplifiedDto>> getRidingRecordAfter(String memberId, Long bicycleId, Long time)
     {
-        List<RidingRecord> dbResult = ridingRecordRepository.findMatchingRecordAfter(memberId, bicycleNo, time);
+        List<RidingRecord> dbResult = ridingRecordRepository.findMatchingRecordAfter(memberId, bicycleId, time);
         if(dbResult.size() == 0)
         {
             return new ResponseDataDto<>("No Matching Data",204,null);
@@ -54,7 +53,7 @@ public class RidingRecordService {
     }
 
     @Transactional
-    public ResponseDataDto<RidingRecord> getRidingRecordDetail(String memberId,Integer bicycleNo,Long Id)
+    public ResponseDataDto<RidingRecord> getRidingRecordDetail(String memberId,Long bicycleNo,Long Id)
     {
         Optional<RidingRecord> dbResult = ridingRecordRepository.findById(Id);
         if(dbResult.isEmpty())
@@ -67,7 +66,7 @@ public class RidingRecordService {
         {
             return new ResponseDataDto<>("Trying to get record of other member",403,null);
         }
-        else if(targetRecord.getBicycleNo() != bicycleNo)
+        else if(targetRecord.getBicycleId() != bicycleNo)
         {
             return new ResponseDataDto<>("BicycleNo does not match with record ID",406,null);
         }

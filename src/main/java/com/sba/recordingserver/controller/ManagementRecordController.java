@@ -17,19 +17,31 @@ public class ManagementRecordController {
     ManagementService managementService;
 
     @GetMapping("/management_record/whole_list")
-    ResponseDataDto<List<ManagementRecordSimplifiedDto>> getWholeList(@RequestHeader(value="Authorization")String token, @RequestParam Integer bicycleNo) {
+    ResponseDataDto<List<ManagementRecordSimplifiedDto>> getWholeList(@RequestHeader(value="Authorization")String token, @RequestParam Long bicycleId) {
         String memberId = TokenProvider.GetUserId(token.substring(token.lastIndexOf(" ")));
-        return managementService.getWholeRidingRecord(memberId, bicycleNo);
+        return managementService.getWholeRidingRecord(memberId, bicycleId);
     }
 
     @GetMapping("/management_record/one")
-    public ResponseDataDto<ManagementRecord> getRecord(@RequestHeader(value="Authorization")String token, @RequestParam Integer bicycleNo, @RequestParam Long recordId) {
+    public ResponseDataDto<ManagementRecord> getRecord(@RequestHeader(value="Authorization")String token, @RequestParam Long bicycleId, @RequestParam Long recordId) {
         String memberId = TokenProvider.GetUserId(token.substring(token.lastIndexOf(" ")));
-        return managementService.getManagementRecordDetail(memberId, bicycleNo, recordId);
+        return managementService.getManagementRecordDetail(memberId, bicycleId, recordId);
     }
 
     @PostMapping("management_record/post")
     public ResponseNoDataDto postRecord(@RequestBody ManagementRecordPostDto postRequest) {
         return managementService.postManagementRecord(postRequest);
+    }
+
+
+    @PostMapping(value="management_record/register_bicycle")
+    public ResponseNoDataDto registerBicycle(@RequestBody BicycleRegisterRequestDto request)
+    {
+        return managementService.registerBicycle(request);
+    }
+    @GetMapping(value="management_record/get_bicycle_list")
+    public ResponseDataDto getBicycleList(@RequestHeader(value="Authorization")String token) {
+        String memberId = TokenProvider.GetUserId(token.substring(token.lastIndexOf(" ")));
+        return managementService.getBicycleList(memberId);
     }
 }

@@ -18,22 +18,22 @@ public class RidingRecordController {
     RidingRecordService ridingRecordService;
 
     @GetMapping(value = "/riding_record/whole_list")
-    public ResponseDataDto<List<RidingRecordSimplifiedDto>> getWholeList(@RequestHeader(value="Authorization")String token, @RequestParam Integer bicycleNo)
+    public ResponseDataDto<List<RidingRecordSimplifiedDto>> getWholeList(@RequestHeader(value="Authorization")String token, @RequestParam Long bicycleId)
     {
         String memberId = TokenProvider.GetUserId(token.substring(token.lastIndexOf(" ")));
-        return ridingRecordService.getWholeRidingRecord(memberId,bicycleNo);
+        return ridingRecordService.getWholeRidingRecord(memberId, bicycleId);
     }
 
     @GetMapping(value = "/riding_record/list_after")
-    public ResponseDataDto<List<RidingRecordSimplifiedDto>> getWholeListAfter(@RequestHeader(value="Authorization")String token, @RequestParam Integer bicycleNo, @RequestParam Long time) {
+    public ResponseDataDto<List<RidingRecordSimplifiedDto>> getWholeListAfter(@RequestHeader(value="Authorization")String token, @RequestParam Long bicycleId, @RequestParam Long time) {
         String memberId = TokenProvider.GetUserId(token.substring(token.lastIndexOf(" ")));
-        return ridingRecordService.getRidingRecordAfter(memberId,bicycleNo,time);
+        return ridingRecordService.getRidingRecordAfter(memberId, bicycleId,time);
     }
 
     @GetMapping(value = "/riding_record/one")
-    public ResponseDataDto<RidingRecord> getRecord(@RequestHeader(value="Authorization")String token, @RequestParam Integer bicycleNo, @RequestParam Long recordId) {
+    public ResponseDataDto<RidingRecord> getRecord(@RequestHeader(value="Authorization")String token, @RequestParam Long bicycleId, @RequestParam Long recordId) {
         String memberId = TokenProvider.GetUserId(token.substring(token.lastIndexOf(" ")));
-        return ridingRecordService.getRidingRecordDetail(memberId, bicycleNo, recordId);
+        return ridingRecordService.getRidingRecordDetail(memberId, bicycleId, recordId);
     }
 
     @PostMapping(value= "/riding_record/post")

@@ -18,5 +18,6 @@ public class Bicycle {
     @Column private String ownerId;
     @Column private String bicycleName;
     @Lob private String bicycleImage;
+    @Column private Long registerTime;
 
 }

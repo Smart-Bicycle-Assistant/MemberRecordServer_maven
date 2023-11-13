@@ -21,11 +21,7 @@ public class MemberController {
         return memberService.registerMember(member);
     }
 
-    @PostMapping(value="/register_bicycle")
-    public ResponseNoDataDto registerBicycle(@RequestBody BicycleRegisterRequestDto request)
-    {
-        return memberService.registerBicycle(request);
-    }
+
 
     @PostMapping(value="/login")
     @Transactional
