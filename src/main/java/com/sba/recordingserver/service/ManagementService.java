@@ -43,7 +43,7 @@ public class ManagementService {
         List<ManagementRecordSimplifiedDto> result = dbResult.stream().map(m->
                         new ManagementRecordSimplifiedDto(m.getManagementTime(),
                                 (m.getGears() == ManagementRecord.CHANGED ? 1:0) +
-                                        (m.getTire() == ManagementRecord.CHANGED ? 1 : 0) +
+                                        (m.getFrontTire() == ManagementRecord.CHANGED  || m.getRearTire() == ManagementRecord.CHANGED? 1 : 0) +
                                         (m.getChain() == ManagementRecord.CHANGED ? 1 : 0) +
                                         (m.getBrakes() == ManagementRecord.CHANGED ? 1 : 0)
                                 ,m.getId()))
@@ -92,8 +92,10 @@ public class ManagementService {
             Member owner = optOwner.get();
             owner.setBicycleNumber(owner.getBicycleNumber()+1);
             memberRepository.save(owner);
-            bicycleRepository.save(request.toEntity());
-            return new ResponseNoDataDto("Register Success",200);
+            Bicycle entity = request.toEntity();
+            bicycleRepository.save(entity);
+            System.out.println(entity.getId());
+            return new ResponseNoDataDto(""+entity.getId(),200);
         }
         else
         {

@@ -13,7 +13,10 @@ public class ManagementRecordPostDto {
 
     String memberId;
     Long bicycleId;
-    Integer tire;
+    Integer frontTire;
+    Integer rearTire;
+    Integer frontTireLife;
+    Integer rearTireLife;
     Integer brakes;
     Integer chain;
     Integer gears;
@@ -23,7 +26,10 @@ public class ManagementRecordPostDto {
         ManagementRecord managementRecord = new ManagementRecord();
         managementRecord.setMemberId(memberId);
         managementRecord.setBicycleId(bicycleId);
-        managementRecord.setTire(tire);
+        managementRecord.setFrontTire(frontTire);
+        managementRecord.setFrontTireLife(frontTireLife);
+        managementRecord.setRearTire(rearTire);
+        managementRecord.setRearTireLife(rearTireLife);
         managementRecord.setBrakes(brakes);
         managementRecord.setChain(chain);
         managementRecord.setGears(gears);
