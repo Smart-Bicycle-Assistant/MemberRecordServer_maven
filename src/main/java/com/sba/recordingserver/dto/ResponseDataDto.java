@@ -1,12 +1,14 @@
 package com.sba.recordingserver.dto;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
 public class ResponseDataDto<T> {
     private String message;
     private int status;
@@ -17,4 +19,5 @@ public class ResponseDataDto<T> {
         this.status = status;
         this.data = data;
     }
+
 }

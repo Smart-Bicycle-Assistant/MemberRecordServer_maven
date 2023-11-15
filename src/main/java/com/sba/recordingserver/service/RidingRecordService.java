@@ -27,7 +27,7 @@ public class RidingRecordService {
     @Transactional
     public ResponseDataDto<List<RidingRecordSimplifiedDto>> getWholeRidingRecord(String memberId, Long bicycleId)
     {
-        List<RidingRecord> dbResult =  ridingRecordRepository.findMatchingRecord(memberId,bicycleId);
+        List<RidingRecord> dbResult =  ridingRecordRepository.findMatchingRecord(bicycleId);
         if(dbResult.size() == 0)
         {
             return new ResponseDataDto<>("No Matching Data",204,null);
@@ -41,7 +41,7 @@ public class RidingRecordService {
     @Transactional
     public ResponseDataDto<List<RidingRecordSimplifiedDto>> getRidingRecordAfter(String memberId, Long bicycleId, Long time)
     {
-        List<RidingRecord> dbResult = ridingRecordRepository.findMatchingRecordAfter(memberId, bicycleId, time);
+        List<RidingRecord> dbResult = ridingRecordRepository.findMatchingRecordAfter(bicycleId, time);
         if(dbResult.size() == 0)
         {
             return new ResponseDataDto<>("No Matching Data",204,null);

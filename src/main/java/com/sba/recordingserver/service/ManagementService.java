@@ -33,14 +33,20 @@ public class ManagementService {
     private RidingRecordRepository ridingRecordRepository;
 
     @Transactional
-    public ResponseDataDto<List<ManagementRecordSimplifiedDto>> getWholeRidingRecord(String memberId, Long bicycleId)
+    public ResponseDataDto getWholeRidingRecord(String memberId, Long bicycleId)
     {
+        ResponseDataDto<ManagementRecordInfoDto> result = new ResponseDataDto<>();
+
         List<ManagementRecord> dbResult =  managementRecordRepository.findMatchingRecord(memberId,bicycleId);
         if(dbResult.size() == 0)
         {
-            return new ResponseDataDto<>("No Matching Data",204,null);
+            result.setMessage("No Matching Data");
+            result.setStatus(204);
+            result.setData(null);
+            return result;
         }
-        List<ManagementRecordSimplifiedDto> result = dbResult.stream().map(m->
+        ManagementRecordInfoDto managementRecordInfoDto = new ManagementRecordInfoDto();
+        List<ManagementRecordSimplifiedDto> listResult = dbResult.stream().map(m->
                         new ManagementRecordSimplifiedDto(m.getManagementTime(),
                                 (m.getGears() == ManagementRecord.CHANGED ? 1:0) +
                                         (m.getFrontTire() == ManagementRecord.CHANGED  || m.getRearTire() == ManagementRecord.CHANGED? 1 : 0) +
@@ -48,7 +54,87 @@ public class ManagementService {
                                         (m.getBrakes() == ManagementRecord.CHANGED ? 1 : 0)
                                 ,m.getId()))
                 .collect(Collectors.toList());
-        return new ResponseDataDto<>("OK : Result Count = "+result.size(),200,result);
+        managementRecordInfoDto.setRecords(listResult);
+
+        BicycleStatusDto bicycleStatusDto = new BicycleStatusDto();
+        Optional<ManagementRecord> thisRecord;
+        Optional<Bicycle> targetBicycle = bicycleRepository.findById(bicycleId);
+
+        if(targetBicycle.isPresent()) {
+            bicycleStatusDto.setBicycleName(targetBicycle.get().getBicycleName());
+        }
+        else {
+            result.setMessage("No such Bicycle");
+            result.setStatus(204);
+            result.setData(null);
+            return result;
+        }
+        //latestFrontTireChange
+        thisRecord = managementRecordRepository.findTopByBicycleIdAndFrontTireOrderByManagementTimeDesc(bicycleId,ManagementRecord.CHANGED);
+        if(thisRecord.isPresent()) {
+            bicycleStatusDto.setFrontTireExchangeTime(thisRecord.get().getManagementTime());
+            String lifeTime;
+            List<RidingRecord> ridingRecords = ridingRecordRepository.findMatchingRecordAfter(bicycleId,thisRecord.get().getManagementTime());
+            Double ridingDistance = 0d;
+            for(RidingRecord ridingRecord : ridingRecords) {
+                ridingDistance += ridingRecord.getDistance();
+            }
+            lifeTime = String.format("%.1f / %d (km)",ridingDistance,thisRecord.get().getFrontTireLife());
+            bicycleStatusDto.setFrontTireLeftLife(lifeTime);
+
+        }
+        else {
+            bicycleStatusDto.setFrontTireExchangeTime(0L);
+            bicycleStatusDto.setFrontTireLeftLife("no information");
+        }
+        //latestRearTireChange
+        thisRecord = managementRecordRepository.findTopByBicycleIdAndRearTireOrderByManagementTimeDesc(bicycleId,ManagementRecord.CHANGED);
+        if(thisRecord.isPresent()) {
+            bicycleStatusDto.setRearTireExchangeTime(thisRecord.get().getManagementTime());
+            String lifeTime;
+            List<RidingRecord> ridingRecords = ridingRecordRepository.findMatchingRecordAfter(bicycleId,thisRecord.get().getManagementTime());
+            Double ridingDistance = 0d;
+            for(RidingRecord ridingRecord : ridingRecords) {
+                ridingDistance += ridingRecord.getDistance();
+            }
+            lifeTime = String.format("%.1f / %d (km)",ridingDistance,thisRecord.get().getRearTireLife());
+            bicycleStatusDto.setRearTireLeftLife(lifeTime);
+        }
+        else {
+            bicycleStatusDto.setFrontTireExchangeTime(0L);
+            bicycleStatusDto.setFrontTireLeftLife("no information");
+        }
+        //gearExchange
+        thisRecord = managementRecordRepository.findTopByBicycleIdAndGearsOrderByManagementTimeDesc(bicycleId,ManagementRecord.CHANGED);
+        if(thisRecord.isPresent()) {
+            bicycleStatusDto.setGearExchangeTime(thisRecord.get().getManagementTime());
+        }
+        else {
+            bicycleStatusDto.setGearExchangeTime(0L);
+        }
+        //brakeExchange
+        thisRecord = managementRecordRepository.findTopByBicycleIdAndBrakesOrderByManagementTimeDesc(bicycleId,ManagementRecord.CHANGED);
+        if(thisRecord.isPresent()) {
+            bicycleStatusDto.setBrakeExchangeTime(thisRecord.get().getManagementTime());
+        }
+        else {
+            bicycleStatusDto.setBrakeExchangeTime(0L);
+        }
+
+        //Chain
+        thisRecord = managementRecordRepository.findTopByBicycleIdAndChainOrderByManagementTimeDesc(bicycleId,ManagementRecord.CHANGED);
+        if(thisRecord.isPresent()) {
+            bicycleStatusDto.setChainExchangeTime(thisRecord.get().getManagementTime());
+        }
+        else {
+            bicycleStatusDto.setChainExchangeTime(0L);
+        }
+
+        managementRecordInfoDto.setBicycleStatus(bicycleStatusDto);
+        result.setData(managementRecordInfoDto);
+        result.setMessage("OK");
+        result.setStatus(200);
+        return result;
     }
 
     @Transactional
@@ -76,6 +162,12 @@ public class ManagementService {
     public ResponseNoDataDto postManagementRecord(ManagementRecordPostDto managementRecordPostDto)
     {
         managementRecordRepository.save(managementRecordPostDto.toEntity());
+        if(managementRecordPostDto.getFrontTire() != 2 && managementRecordPostDto.getFrontTireLife() != 0) {
+            return new ResponseNoDataDto("You have TireLife when Tire hasn't been changed",403);
+        }
+        if(managementRecordPostDto.getRearTire() != 2 && managementRecordPostDto.getRearTireLife() != 0) {
+            return new ResponseNoDataDto("You have TireLife when Tire hasn't been changed",403);
+        }
         return new ResponseNoDataDto("OK",200);
     }
 
@@ -113,5 +205,32 @@ public class ManagementService {
             targetList.add(new BicycleInfoDto(thisBicycle.getId(), thisBicycle.getBicycleName(), thisBicycle.getBicycleImage(), thisBicycle.getRegisterTime(), distance));
         }
         return new ResponseDataDto("OK",200,targetList);
+    }
+
+    @Transactional
+    public ResponseNoDataDto deleteBicycle(String memberId, Long bicycleId) {
+        Optional<Bicycle> targetBicycle = bicycleRepository.findById(bicycleId);
+        if(targetBicycle.isPresent()) {
+            if(!targetBicycle.get().getOwnerId().equals(memberId))
+            {
+                return new ResponseNoDataDto("trying to delete other's bike", 403);
+
+            }
+            else {
+                Optional<Member> member = memberRepository.findById(memberId);
+                if(member.isPresent()) {
+                    Member memberEntity = member.get();
+                    memberEntity.setBicycleNumber(memberEntity.getBicycleNumber()-1);
+                    memberRepository.save(memberEntity);
+                }
+                ridingRecordRepository.deleteAllByBicycleId(bicycleId);
+                managementRecordRepository.deleteAllByBicycleId(bicycleId);
+                bicycleRepository.deleteById(bicycleId);
+                return new ResponseNoDataDto("OK", 200);
+            }
+        }
+        else {
+            return new ResponseNoDataDto("target Bike not found", 204);
+        }
     }
 }

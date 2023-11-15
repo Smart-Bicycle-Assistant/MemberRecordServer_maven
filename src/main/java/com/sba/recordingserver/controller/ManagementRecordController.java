@@ -44,4 +44,10 @@ public class ManagementRecordController {
         String memberId = TokenProvider.GetUserId(token.substring(token.lastIndexOf(" ")));
         return managementService.getBicycleList(memberId);
     }
+
+    @DeleteMapping(value="delete_bicycle")
+    public ResponseNoDataDto deleteBicycle(@RequestHeader(value="Authorization")String token, @RequestParam Long bicycleId) {
+        String memberId = TokenProvider.GetUserId(token.substring(token.lastIndexOf(" ")));
+        return managementService.deleteBicycle(memberId, bicycleId);
+    }
 }

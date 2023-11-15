@@ -3,17 +3,19 @@ package com.sba.recordingserver.service;
 import com.sba.recordingserver.dto.*;
 import com.sba.recordingserver.entity.Bicycle;
 import com.sba.recordingserver.entity.Member;
-import com.sba.recordingserver.repository.BicycleRepository;
-import com.sba.recordingserver.repository.MemberRepository;
+import com.sba.recordingserver.entity.RidingLocation;
+import com.sba.recordingserver.repository.*;
 import com.sba.recordingserver.security.TokenProvider;
 import com.sba.recordingserver.util.Util;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -29,6 +31,15 @@ public class MemberService {
 
     @Autowired
     private TokenProvider tokenProvider;
+
+    @Autowired
+    private RidingRecordRepository ridingRecordRepository;
+
+    @Autowired
+    private RidingLocationRepository ridingLocationRepository;
+
+    @Autowired
+    private ManagementRecordRepository managementRecordRepository;
 
     private JavaMailSender emailSender;
 
@@ -164,5 +175,24 @@ public class MemberService {
         {
             return new ResponseNoDataDto("owner has bicycle with same name",406);
         }
+    }
+
+    public ResponseNoDataDto deleteMember(String memberId) {
+        if(bicycleRepository.findAllByOwnerIdOrderById(memberId).size() != 0) {
+            List<Bicycle> bicycleList =  bicycleRepository.deleteAllByOwnerId(memberId);
+
+        }
+        managementRecordRepository.deleteAllByMemberId(memberId);
+        if(memberRepository.existsById(memberId)) {
+            ridingRecordRepository.deleteAllByMemberId(memberId);
+        }
+        if(ridingLocationRepository.findById(memberId).isPresent()) {
+            ridingLocationRepository.deleteById(memberId);
+        }
+
+        RidingCoordinateMemoryRepository.getInstance().remove(memberId);
+
+        memberRepository.deleteMemberById(memberId);
+        return new ResponseNoDataDto("OK",200);
     }
 }
