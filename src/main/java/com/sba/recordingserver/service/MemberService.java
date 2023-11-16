@@ -79,7 +79,7 @@ public class MemberService {
         {
             System.out.println("login request for "+loginRequest.getId() + " successfully done");
             final String token = tokenProvider.create(optionalMember.get());
-            return new ResponseDataDto("OK",200,new MemberLoginResultDto(optionalMember.get().getId(),optionalMember.get().getNickname(), optionalMember.get().getEmail(), token));
+            return new ResponseDataDto("OK",200,new MemberLoginResultDto(optionalMember.get().getId(),optionalMember.get().getNickname(),optionalMember.get().getEmail(),token));
         }
     }
 
@@ -155,27 +155,27 @@ public class MemberService {
         }
     }
 
-    public ResponseNoDataDto registerBicycle(BicycleRegisterRequestDto request)
-    {
-        Optional<Member> optOwner =  memberRepository.findById(request.getOwnerId());
-        if(optOwner.isEmpty())
-        {
-            return new ResponseNoDataDto("there is no such user id",406);
-        }
-        Optional<Bicycle> result =  bicycleRepository.findBicycle(request.getOwnerId(), request.getBicycleName());
-        if(result.isEmpty())
-        {
-            Member owner = optOwner.get();
-            owner.setBicycleNumber(owner.getBicycleNumber()+1);
-            memberRepository.save(owner);
-            bicycleRepository.save(request.toEntity());
-            return new ResponseNoDataDto("Register Success",200);
-        }
-        else
-        {
-            return new ResponseNoDataDto("owner has bicycle with same name",406);
-        }
-    }
+//    public ResponseNoDataDto registerBicycle(BicycleRegisterRequestDto request)
+//    {
+//        Optional<Member> optOwner =  memberRepository.findById(request.getOwnerId());
+//        if(optOwner.isEmpty())
+//        {
+//            return new ResponseNoDataDto("there is no such user id",406);
+//        }
+//        Optional<Bicycle> result =  bicycleRepository.findBicycle(request.getOwnerId(), request.getBicycleName());
+//        if(result.isEmpty())
+//        {
+//            Member owner = optOwner.get();
+//            owner.setBicycleNumber(owner.getBicycleNumber()+1);
+//            memberRepository.save(owner);
+//            bicycleRepository.save(request.toEntity());
+//            return new ResponseNoDataDto("Register Success",200);
+//        }
+//        else
+//        {
+//            return new ResponseNoDataDto("owner has bicycle with same name",406);
+//        }
+//    }
 
     public ResponseNoDataDto deleteMember(String memberId) {
         if(bicycleRepository.findAllByOwnerIdOrderById(memberId).size() != 0) {
@@ -194,5 +194,16 @@ public class MemberService {
 
         memberRepository.deleteMemberById(memberId);
         return new ResponseNoDataDto("OK",200);
+    }
+
+    public ResponseDataDto getUserInfo(String memberId) {
+        Optional<Member> member =  memberRepository.findById(memberId);
+        if(member.isPresent()) {
+            return new ResponseDataDto<UserInfoDto>("OK",200,new UserInfoDto(member.get().getId(),member.get().getNickname(),member.get().getEmail()));
+        }
+        else
+        {
+            return new ResponseDataDto("No such member",204,null);
+        }
     }
 }

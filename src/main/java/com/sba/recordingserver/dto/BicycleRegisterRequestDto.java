@@ -9,14 +9,12 @@ import lombok.ToString;
 @Setter
 @ToString
 public class BicycleRegisterRequestDto {
-    private String ownerId;
     private String bicycleName;
     private String bicycleImage;
     private Long registerTime;
 
     public Bicycle toEntity() {
         Bicycle bicycle = new Bicycle();
-        bicycle.setOwnerId(ownerId);
         bicycle.setBicycleName(bicycleName);
         bicycle.setBicycleImage(bicycleImage);
         bicycle.setRegisterTime(registerTime);

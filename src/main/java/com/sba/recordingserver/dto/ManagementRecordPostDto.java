@@ -11,7 +11,6 @@ import lombok.ToString;
 public class ManagementRecordPostDto {
 //    aiaiaiaiaiaiaiaiaiaiai aiai
 
-    String memberId;
     Long bicycleId;
     Integer frontTire;
     Integer rearTire;
@@ -24,7 +23,6 @@ public class ManagementRecordPostDto {
 
     public ManagementRecord toEntity() {
         ManagementRecord managementRecord = new ManagementRecord();
-        managementRecord.setMemberId(memberId);
         managementRecord.setBicycleId(bicycleId);
         managementRecord.setFrontTire(frontTire);
         managementRecord.setFrontTireLife(frontTireLife);

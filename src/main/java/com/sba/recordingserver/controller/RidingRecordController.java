@@ -37,8 +37,9 @@ public class RidingRecordController {
     }
 
     @PostMapping(value= "/riding_record/post")
-    public ResponseNoDataDto postRecord(@RequestBody RidingRecordPostDto postRequest) {
-        return ridingRecordService.postRidingRecord(postRequest);
+    public ResponseNoDataDto postRecord(@RequestHeader(value="Authorization")String token, @RequestBody RidingRecordPostDto postRequest) {
+        String memberId = TokenProvider.GetUserId(token.substring(token.lastIndexOf(" ")));
+        return ridingRecordService.postRidingRecord(postRequest,memberId);
     }
 
 }

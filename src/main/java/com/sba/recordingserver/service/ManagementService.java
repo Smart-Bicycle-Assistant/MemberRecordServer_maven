@@ -159,32 +159,36 @@ public class ManagementService {
     }
 
     @Transactional
-    public ResponseNoDataDto postManagementRecord(ManagementRecordPostDto managementRecordPostDto)
+    public ResponseNoDataDto postManagementRecord(ManagementRecordPostDto managementRecordPostDto,String memberId)
     {
-        managementRecordRepository.save(managementRecordPostDto.toEntity());
+        ManagementRecord entity = managementRecordPostDto.toEntity();
+        entity.setMemberId(memberId);
+
         if(managementRecordPostDto.getFrontTire() != 2 && managementRecordPostDto.getFrontTireLife() != 0) {
             return new ResponseNoDataDto("You have TireLife when Tire hasn't been changed",403);
         }
         if(managementRecordPostDto.getRearTire() != 2 && managementRecordPostDto.getRearTireLife() != 0) {
             return new ResponseNoDataDto("You have TireLife when Tire hasn't been changed",403);
         }
+        managementRecordRepository.save(entity);
         return new ResponseNoDataDto("OK",200);
     }
 
-    public ResponseNoDataDto registerBicycle(BicycleRegisterRequestDto request)
+    public ResponseNoDataDto registerBicycle(BicycleRegisterRequestDto request,String memberId)
     {
-        Optional<Member> optOwner =  memberRepository.findById(request.getOwnerId());
+        Optional<Member> optOwner =  memberRepository.findById(memberId);
         if(optOwner.isEmpty())
         {
             return new ResponseNoDataDto("there is no such user id",406);
         }
-        Optional<Bicycle> result =  bicycleRepository.findBicycle(request.getOwnerId(), request.getBicycleName());
+        Optional<Bicycle> result =  bicycleRepository.findBicycle(memberId, request.getBicycleName());
         if(result.isEmpty())
         {
             Member owner = optOwner.get();
             owner.setBicycleNumber(owner.getBicycleNumber()+1);
             memberRepository.save(owner);
             Bicycle entity = request.toEntity();
+            entity.setOwnerId(memberId);
             bicycleRepository.save(entity);
             System.out.println(entity.getId());
             return new ResponseNoDataDto(""+entity.getId(),200);

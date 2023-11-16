@@ -76,16 +76,18 @@ public class RidingRecordService {
     }
 
     @Transactional
-    public ResponseNoDataDto postRidingRecord(RidingRecordPostDto postRequest)
+    public ResponseNoDataDto postRidingRecord(RidingRecordPostDto postRequest,String memberId)
     {
 //        System.out.println(ridingCoordinateMemoryRepository.findById(postRequest.getMemberId()));
-        String map = ridingCoordinateMemoryRepository.findById(postRequest.getMemberId());
-        String listSpeed = ridingSpeedMemoryRepository.findById(postRequest.getMemberId());
+        String map = ridingCoordinateMemoryRepository.findById(memberId);
+        String listSpeed = ridingSpeedMemoryRepository.findById(memberId);
         RidingRecord entity = postRequest.toEntity("");
         entity.setMap(map);
         entity.setListSpeed(listSpeed);
+        entity.setMemberId(memberId);
         ridingRecordRepository.save(entity);
-        ridingCoordinateMemoryRepository.remove(postRequest.getMemberId());
+        ridingCoordinateMemoryRepository.remove(memberId);
+        ridingSpeedMemoryRepository.remove(memberId);
         return new ResponseNoDataDto("OK",200);
     }
 }

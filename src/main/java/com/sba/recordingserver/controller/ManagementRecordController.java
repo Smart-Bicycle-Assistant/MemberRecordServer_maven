@@ -29,15 +29,17 @@ public class ManagementRecordController {
     }
 
     @PostMapping("management_record/post")
-    public ResponseNoDataDto postRecord(@RequestBody ManagementRecordPostDto postRequest) {
-        return managementService.postManagementRecord(postRequest);
+    public ResponseNoDataDto postRecord(@RequestHeader(value="Authorization")String token, @RequestBody ManagementRecordPostDto postRequest) {
+        String memberId = TokenProvider.GetUserId(token.substring(token.lastIndexOf(" ")));
+        return managementService.postManagementRecord(postRequest, memberId);
     }
 
 
     @PostMapping(value="management_record/register_bicycle")
-    public ResponseNoDataDto registerBicycle(@RequestBody BicycleRegisterRequestDto request)
+    public ResponseNoDataDto registerBicycle(@RequestHeader(value="Authorization")String token, @RequestBody BicycleRegisterRequestDto request)
     {
-        return managementService.registerBicycle(request);
+        String memberId = TokenProvider.GetUserId(token.substring(token.lastIndexOf(" ")));
+        return managementService.registerBicycle(request,memberId);
     }
     @GetMapping(value="management_record/get_bicycle_list")
     public ResponseDataDto getBicycleList(@RequestHeader(value="Authorization")String token) {

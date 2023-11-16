@@ -55,4 +55,10 @@ public class MemberController {
         String memberId = TokenProvider.GetUserId(token.substring(token.lastIndexOf(" ")));
         return memberService.deleteMember(memberId);
     }
+    @GetMapping(value="/member/get_user_info")
+    public ResponseDataDto getUserInfo(@RequestHeader(value="Authorization")String token)
+    {
+        String memberId = TokenProvider.GetUserId(token.substring(token.lastIndexOf(" ")));
+        return memberService.getUserInfo(memberId);
+    }
 }

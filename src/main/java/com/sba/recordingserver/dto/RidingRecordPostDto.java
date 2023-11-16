@@ -9,7 +9,6 @@ import lombok.ToString;
 @Setter
 @ToString
 public class RidingRecordPostDto {
-    private String memberId;
     private Long bicycleId;
     private Long ridingTime;
     private Double distance;
@@ -21,7 +20,6 @@ public class RidingRecordPostDto {
 
     public RidingRecord toEntity(String map) {
         RidingRecord ridingRecord = new RidingRecord();
-        ridingRecord.setMemberId(memberId);
         ridingRecord.setBicycleId(bicycleId);
         ridingRecord.setRidingTime(ridingTime);
         ridingRecord.setDistance(distance);
