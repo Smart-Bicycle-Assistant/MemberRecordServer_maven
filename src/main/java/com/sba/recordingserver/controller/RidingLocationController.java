@@ -30,13 +30,13 @@ public class RidingLocationController {
     RidingLocationService ridingLocationService;
 
     @GetMapping(value = "/riding_location/post_and_get")
-    public ResponseDataDto<List<UserLocationResultDto>> postLocationAndGetNearbyUsers(@RequestHeader(value="Authorization")String token, @RequestParam Double longitude, @RequestParam Double latitude, @RequestParam Boolean packMode, @RequestParam Double speed)
+    public ResponseDataDto<List<UserLocationResultDto>> postLocationAndGetNearbyUsers(@RequestHeader(value="Authorization")String token, @RequestParam Double longitude, @RequestParam Double latitude, @RequestParam Boolean packMode, @RequestParam Double targetSpeed, @RequestParam Double curSpeed)
     {
 
 //        System.out.println("token : " + token);
 //        System.out.println("memberId : " + TokenProvider.GetUserId(token.substring(token.lastIndexOf(" "))));
         String memberId = TokenProvider.GetUserId(token.substring(token.lastIndexOf(" ")));
-        return ridingLocationService.saveLocationAndReturnNearbyUsers(memberId, longitude, latitude, packMode, speed);
+        return ridingLocationService.saveLocationAndReturnNearbyUsers(memberId, longitude, latitude, packMode, targetSpeed,curSpeed);
     }
     @GetMapping(value = "/riding_location/startRiding")
     public ResponseNoDataDto prepareForStartRiding(@RequestHeader(value="Authorization")String token) {

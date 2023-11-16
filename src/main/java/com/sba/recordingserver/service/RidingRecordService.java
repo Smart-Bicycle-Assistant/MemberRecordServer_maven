@@ -7,6 +7,7 @@ import com.sba.recordingserver.dto.RidingRecordSimplifiedDto;
 import com.sba.recordingserver.entity.RidingRecord;
 import com.sba.recordingserver.repository.RidingCoordinateMemoryRepository;
 import com.sba.recordingserver.repository.RidingRecordRepository;
+import com.sba.recordingserver.repository.RidingSpeedMemoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +24,7 @@ public class RidingRecordService {
     @Autowired
     RidingRecordRepository ridingRecordRepository;
     RidingCoordinateMemoryRepository ridingCoordinateMemoryRepository = RidingCoordinateMemoryRepository.getInstance();
+    RidingSpeedMemoryRepository ridingSpeedMemoryRepository = RidingSpeedMemoryRepository.getInstance();
 
     @Transactional
     public ResponseDataDto<List<RidingRecordSimplifiedDto>> getWholeRidingRecord(String memberId, Long bicycleId)
@@ -78,8 +80,10 @@ public class RidingRecordService {
     {
 //        System.out.println(ridingCoordinateMemoryRepository.findById(postRequest.getMemberId()));
         String map = ridingCoordinateMemoryRepository.findById(postRequest.getMemberId());
+        String listSpeed = ridingSpeedMemoryRepository.findById(postRequest.getMemberId());
         RidingRecord entity = postRequest.toEntity("");
         entity.setMap(map);
+        entity.setListSpeed(listSpeed);
         ridingRecordRepository.save(entity);
         ridingCoordinateMemoryRepository.remove(postRequest.getMemberId());
         return new ResponseNoDataDto("OK",200);

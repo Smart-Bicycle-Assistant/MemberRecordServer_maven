@@ -7,6 +7,7 @@ import com.sba.recordingserver.entity.RidingLocation;
 import com.sba.recordingserver.repository.MemberRepository;
 import com.sba.recordingserver.repository.RidingCoordinateMemoryRepository;
 import com.sba.recordingserver.repository.RidingLocationRepository;
+import com.sba.recordingserver.repository.RidingSpeedMemoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,9 +22,11 @@ public class RidingLocationService {
     @Autowired
     MemberRepository memberRepository;
     RidingCoordinateMemoryRepository ridingCoordinateMemoryRepository = RidingCoordinateMemoryRepository.getInstance();
-    public ResponseDataDto<List<UserLocationResultDto>> saveLocationAndReturnNearbyUsers(String memberId, Double longitude, Double latitude, Boolean packMode, Double speed)
+    RidingSpeedMemoryRepository ridingSpeedMemoryRepository = RidingSpeedMemoryRepository.getInstance();
+    public ResponseDataDto<List<UserLocationResultDto>> saveLocationAndReturnNearbyUsers(String memberId, Double longitude, Double latitude, Boolean packMode, Double targetSpeed, Double curSpeed)
     {
         ridingCoordinateMemoryRepository.save(memberId,longitude,latitude);
+        ridingSpeedMemoryRepository.save(memberId,curSpeed);
 
         Optional<RidingLocation> optionalRidingLocation = ridingLocationRepository.findById(memberId);
         if(optionalRidingLocation.isPresent())
@@ -35,13 +38,13 @@ public class RidingLocationService {
         }
         else
         {
-            RidingLocation ridingLocation = new RidingLocation(memberId,longitude,latitude,speed);
+            RidingLocation ridingLocation = new RidingLocation(memberId,longitude,latitude,targetSpeed);
             ridingLocationRepository.save(ridingLocation);
         }
 
         if(packMode == true)
         {
-            List<RidingLocation> dbResult =  ridingLocationRepository.findNearbyUsers(memberId,longitude,latitude,speed);
+            List<RidingLocation> dbResult =  ridingLocationRepository.findNearbyUsers(memberId,longitude,latitude,targetSpeed);
             if(dbResult.size() == 0)
             {
                 return new ResponseDataDto<>("No Matching Data",204,null);
@@ -73,11 +76,15 @@ public class RidingLocationService {
         String result = ridingCoordinateMemoryRepository.findById(memberId);
         if(result != null) {
             ridingCoordinateMemoryRepository.remove(memberId);
-            return new ResponseNoDataDto("detected termination, but now handled",200);
+            return new ResponseNoDataDto("detected abnormal termination, but now handled",200);
         }
-        else
-        {
-            return new ResponseNoDataDto("OK",200);
+        result = ridingSpeedMemoryRepository.findById(memberId);
+        if (result != null) {
+            ridingSpeedMemoryRepository.remove(memberId);
+            return new ResponseNoDataDto("detected abnormal termination, but now handled",200);
         }
+
+        return new ResponseNoDataDto("OK", 200);
+
     }
 }

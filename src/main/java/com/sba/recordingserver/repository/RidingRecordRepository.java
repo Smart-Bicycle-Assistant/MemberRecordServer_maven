@@ -9,10 +9,10 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface RidingRecordRepository extends JpaRepository<RidingRecord,Long> {
-    @Query("select m from RidingRecord m where m.bicycleId = :bicycleNo")
+    @Query("select m from RidingRecord m where m.bicycleId = :bicycleNo order by m.ridingTime desc")
     List<RidingRecord> findMatchingRecord(@Param("bicycleNo") Long bicycleId);
 
-    @Query("select m from RidingRecord m where m.bicycleId = :bicycleNo and m.ridingTime > :time")
+    @Query("select m from RidingRecord m where m.bicycleId = :bicycleNo and m.ridingTime > :time order by m.ridingTime desc")
     List<RidingRecord> findMatchingRecordAfter(@Param("bicycleNo") Long bicycleId, @Param("time") Long time);
 
     @Query("select SUM(m.distance) from RidingRecord m where m.bicycleId = :id")
