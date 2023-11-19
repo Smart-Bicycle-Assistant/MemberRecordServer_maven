@@ -1,17 +1,22 @@
 package com.sba.recordingserver.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.sba.recordingserver.dto.ResponseDataDto;
 import com.sba.recordingserver.dto.ResponseNoDataDto;
 import com.sba.recordingserver.dto.RidingRecordPostDto;
 import com.sba.recordingserver.dto.RidingRecordSimplifiedDto;
+import com.sba.recordingserver.entity.RidingCoordinate;
 import com.sba.recordingserver.entity.RidingRecord;
-import com.sba.recordingserver.repository.RidingCoordinateMemoryRepository;
-import com.sba.recordingserver.repository.RidingRecordRepository;
-import com.sba.recordingserver.repository.RidingSpeedMemoryRepository;
+import com.sba.recordingserver.entity.RidingSpeed;
+import com.sba.recordingserver.repository.*;
+import org.hibernate.internal.build.AllowSysOut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -22,9 +27,17 @@ public class RidingRecordService {
 
 
     @Autowired
+    RidingLocationRepository ridingLocationRepository;
+    @Autowired
     RidingRecordRepository ridingRecordRepository;
-    RidingCoordinateMemoryRepository ridingCoordinateMemoryRepository = RidingCoordinateMemoryRepository.getInstance();
-    RidingSpeedMemoryRepository ridingSpeedMemoryRepository = RidingSpeedMemoryRepository.getInstance();
+
+    @Autowired
+    RidingSpeedRepository ridingSpeedRepository;
+    @Autowired
+    RidingCoordinateRepository ridingCoordinateRepository;
+
+//    RidingCoordinateMemoryRepository ridingCoordinateMemoryRepository = RidingCoordinateMemoryRepository.getInstance();
+//    RidingSpeedMemoryRepository ridingSpeedMemoryRepository = RidingSpeedMemoryRepository.getInstance();
 
     @Transactional
     public ResponseDataDto<List<RidingRecordSimplifiedDto>> getWholeRidingRecord(String memberId, Long bicycleId)
@@ -79,15 +92,60 @@ public class RidingRecordService {
     public ResponseNoDataDto postRidingRecord(RidingRecordPostDto postRequest,String memberId)
     {
 //        System.out.println(ridingCoordinateMemoryRepository.findById(postRequest.getMemberId()));
-        String map = ridingCoordinateMemoryRepository.findById(memberId);
-        String listSpeed = ridingSpeedMemoryRepository.findById(memberId);
+//        String map = ridingCoordinateMemoryRepository.findById(memberId);
+//        String listSpeed = ridingSpeedMemoryRepository.findById(memberId);
+
+        String map = null;
+        String speed;
+        Optional<RidingCoordinate> ridingCoordinate = ridingCoordinateRepository.findById(memberId);
+        Optional<RidingSpeed> ridingSpeed = ridingSpeedRepository.findById(memberId);
+
+        if(ridingCoordinate.isEmpty()) {
+            map = "no data";
+        }
+        if(ridingSpeed.isEmpty()) {
+            speed = "no data";
+        }
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            List<Double> listLatitude = objectMapper.readValue(ridingCoordinate.get().getLatitude(), new TypeReference<List<Double>>() {
+            });
+            List<Double> listLongitude = objectMapper.readValue(ridingCoordinate.get().getLongitude(), new TypeReference<List<Double>>() {
+            });
+            if(listLatitude.size() != listLongitude.size()) {
+                return new ResponseNoDataDto("error in coordinate data",204);
+            }
+
+            List<Coordinate> coordinates = new ArrayList<>();
+            for(int i =0; i< listLatitude.size(); i++) {
+                coordinates.add(new Coordinate(listLongitude.get(i),listLatitude.get(i)));
+            }
+            map = new Gson().toJson(coordinates);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        speed = ridingSpeed.get().getSpeed();
         RidingRecord entity = postRequest.toEntity("");
         entity.setMap(map);
-        entity.setListSpeed(listSpeed);
+        entity.setListSpeed(ridingSpeed.get().getSpeed());
         entity.setMemberId(memberId);
         ridingRecordRepository.save(entity);
-        ridingCoordinateMemoryRepository.remove(memberId);
-        ridingSpeedMemoryRepository.remove(memberId);
+        ridingCoordinateRepository.deleteById(memberId);
+        ridingSpeedRepository.deleteById(memberId);
+//        ridingCoordinateMemoryRepository.remove(memberId);
+//        ridingSpeedMemoryRepository.remove(memberId);
+        if(ridingLocationRepository.findById(memberId).isPresent())
+        {
+            ridingLocationRepository.deleteById(memberId);
+        }
         return new ResponseNoDataDto("OK",200);
+    }
+}
+class Coordinate {
+    Double longitude;
+    Double latitude;
+    public Coordinate(Double longitude, Double latitude) {
+        this.longitude = longitude;
+        this.latitude = latitude;
     }
 }

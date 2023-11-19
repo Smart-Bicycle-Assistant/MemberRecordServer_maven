@@ -190,7 +190,7 @@ public class MemberService {
             ridingLocationRepository.deleteById(memberId);
         }
 
-        RidingCoordinateMemoryRepository.getInstance().remove(memberId);
+        
 
         memberRepository.deleteMemberById(memberId);
         return new ResponseNoDataDto("OK",200);
