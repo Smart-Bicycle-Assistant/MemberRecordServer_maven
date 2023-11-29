@@ -77,15 +77,36 @@ public class RidingRecordService {
         }
 
         RidingRecord targetRecord = dbResult.get();
+        System.out.println("targetRecord bicycleId" + targetRecord.getBicycleId());
+        System.out.println(bicycleNo);
         if(!targetRecord.getMemberId().equals(memberId))
         {
             return new ResponseDataDto<>("Trying to get record of other member",403,null);
         }
-        else if(targetRecord.getBicycleId() != bicycleNo)
+
+        else if(!targetRecord.getBicycleId().equals(bicycleNo))
         {
             return new ResponseDataDto<>("BicycleNo does not match with record ID",406,null);
         }
         return new ResponseDataDto<>("OK",200,dbResult.get());
+    }
+
+    @Transactional
+    public ResponseNoDataDto deleteRidingRecord(String memberId, Long recordId) {
+        Optional<RidingRecord> optionalRidingRecord = ridingRecordRepository.findById(recordId);
+        if(optionalRidingRecord.isEmpty()) {
+            return new ResponseNoDataDto("no such entry with that recordId", 204);
+        }
+        else {
+            RidingRecord ridingRecord = optionalRidingRecord.get();
+            if(!ridingRecord.getMemberId().equals(memberId)) {
+                return new ResponseNoDataDto("trying to delete entry of other user",403);
+            }
+            else {
+                ridingRecordRepository.deleteById(recordId);
+                return new ResponseNoDataDto("OK",200);
+            }
+        }
     }
 
     @Transactional
@@ -103,35 +124,43 @@ public class RidingRecordService {
         if(ridingCoordinate.isEmpty()) {
             map = "no data";
         }
+        else {
+            ObjectMapper objectMapper = new ObjectMapper();
+            try {
+                List<Double> listLatitude = objectMapper.readValue(ridingCoordinate.get().getLatitude(), new TypeReference<List<Double>>() {
+                });
+                List<Double> listLongitude = objectMapper.readValue(ridingCoordinate.get().getLongitude(), new TypeReference<List<Double>>() {
+                });
+                if(listLatitude.size() != listLongitude.size()) {
+                    return new ResponseNoDataDto("error in coordinate data",204);
+                }
+
+                List<Coordinate> coordinates = new ArrayList<>();
+                for(int i =0; i< listLatitude.size(); i++) {
+                    coordinates.add(new Coordinate(listLongitude.get(i),listLatitude.get(i)));
+                }
+                map = new Gson().toJson(coordinates);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            ridingCoordinateRepository.deleteById(memberId);
+        }
         if(ridingSpeed.isEmpty()) {
             speed = "no data";
         }
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            List<Double> listLatitude = objectMapper.readValue(ridingCoordinate.get().getLatitude(), new TypeReference<List<Double>>() {
-            });
-            List<Double> listLongitude = objectMapper.readValue(ridingCoordinate.get().getLongitude(), new TypeReference<List<Double>>() {
-            });
-            if(listLatitude.size() != listLongitude.size()) {
-                return new ResponseNoDataDto("error in coordinate data",204);
-            }
-
-            List<Coordinate> coordinates = new ArrayList<>();
-            for(int i =0; i< listLatitude.size(); i++) {
-                coordinates.add(new Coordinate(listLongitude.get(i),listLatitude.get(i)));
-            }
-            map = new Gson().toJson(coordinates);
-        } catch (Exception e) {
-            e.printStackTrace();
+        else {
+            speed = ridingSpeed.get().getSpeed();
+            ridingSpeedRepository.deleteById(memberId);
         }
-        speed = ridingSpeed.get().getSpeed();
+
+
         RidingRecord entity = postRequest.toEntity("");
         entity.setMap(map);
-        entity.setListSpeed(ridingSpeed.get().getSpeed());
+        entity.setListSpeed(speed);
         entity.setMemberId(memberId);
         ridingRecordRepository.save(entity);
-        ridingCoordinateRepository.deleteById(memberId);
-        ridingSpeedRepository.deleteById(memberId);
+
+
 //        ridingCoordinateMemoryRepository.remove(memberId);
 //        ridingSpeedMemoryRepository.remove(memberId);
         if(ridingLocationRepository.findById(memberId).isPresent())

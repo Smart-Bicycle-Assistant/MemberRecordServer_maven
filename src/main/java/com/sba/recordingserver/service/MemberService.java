@@ -14,6 +14,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
@@ -190,7 +191,7 @@ public class MemberService {
             ridingLocationRepository.deleteById(memberId);
         }
 
-        
+
 
         memberRepository.deleteMemberById(memberId);
         return new ResponseNoDataDto("OK",200);
@@ -204,6 +205,25 @@ public class MemberService {
         else
         {
             return new ResponseDataDto("No such member",204,null);
+        }
+    }
+
+    public ResponseNoDataDto updateMemberData(String memberId, MemberDto memberDto) {
+        Optional<Member> optionalMember = memberRepository.findById(memberId);
+        if(!memberId.equals(memberDto.getId())) {
+            return new ResponseNoDataDto("trying to change id",403);
+        }
+        else {
+            if(optionalMember.isEmpty()) {
+                return new ResponseNoDataDto("no such member with that id",204);
+            }
+            else {
+                Member member = optionalMember.get();
+                member.setNickname(memberDto.getNickname());
+                member.setEmail(memberDto.getEmail());
+                member.setPassword(memberDto.getPassword());
+                return new ResponseNoDataDto("OK",200);
+            }
         }
     }
 }

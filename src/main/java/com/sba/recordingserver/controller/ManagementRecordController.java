@@ -28,20 +28,20 @@ public class ManagementRecordController {
         return managementService.getManagementRecordDetail(memberId, bicycleId, recordId);
     }
 
-    @PostMapping("management_record/post")
+    @PostMapping("/management_record/post")
     public ResponseNoDataDto postRecord(@RequestHeader(value="Authorization")String token, @RequestBody ManagementRecordPostDto postRequest) {
         String memberId = TokenProvider.GetUserId(token.substring(token.lastIndexOf(" ")));
         return managementService.postManagementRecord(postRequest, memberId);
     }
 
 
-    @PostMapping(value="management_record/register_bicycle")
+    @PostMapping(value="/management_record/register_bicycle")
     public ResponseNoDataDto registerBicycle(@RequestHeader(value="Authorization")String token, @RequestBody BicycleRegisterRequestDto request)
     {
         String memberId = TokenProvider.GetUserId(token.substring(token.lastIndexOf(" ")));
         return managementService.registerBicycle(request,memberId);
     }
-    @GetMapping(value="management_record/get_bicycle_list")
+    @GetMapping(value="/management_record/get_bicycle_list")
     public ResponseDataDto getBicycleList(@RequestHeader(value="Authorization")String token) {
         String memberId = TokenProvider.GetUserId(token.substring(token.lastIndexOf(" ")));
         return managementService.getBicycleList(memberId);
@@ -51,5 +51,11 @@ public class ManagementRecordController {
     public ResponseNoDataDto deleteBicycle(@RequestHeader(value="Authorization")String token, @RequestParam Long bicycleId) {
         String memberId = TokenProvider.GetUserId(token.substring(token.lastIndexOf(" ")));
         return managementService.deleteBicycle(memberId, bicycleId);
+    }
+
+    @DeleteMapping(value="/management_record/delete_entry")
+    public ResponseNoDataDto deleteManagementRecord(@RequestHeader(value="Authorization")String token, @RequestParam Long recordId) {
+        String memberId = TokenProvider.GetUserId(token.substring(token.lastIndexOf(" ")));
+        return managementService.deleteManagementRecord(memberId,recordId);
     }
 }

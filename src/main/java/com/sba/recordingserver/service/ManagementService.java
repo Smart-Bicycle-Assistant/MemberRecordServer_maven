@@ -151,7 +151,7 @@ public class ManagementService {
         {
             return new ResponseDataDto<>("Trying to get record of other member",403,null);
         }
-        else if(targetRecord.getBicycleId() != bicycleId)
+        else if(!targetRecord.getBicycleId().equals(bicycleId))
         {
             return new ResponseDataDto<>("BicycleNo does not match with record ID",406,null);
         }
@@ -209,6 +209,24 @@ public class ManagementService {
             targetList.add(new BicycleInfoDto(thisBicycle.getId(), thisBicycle.getBicycleName(), thisBicycle.getBicycleImage(), thisBicycle.getRegisterTime(), distance));
         }
         return new ResponseDataDto("OK",200,targetList);
+    }
+
+    @Transactional
+    public ResponseNoDataDto deleteManagementRecord(String memberId, Long recordId) {
+        Optional<ManagementRecord> optionalManagementRecord = managementRecordRepository.findById(recordId);
+        if(optionalManagementRecord.isEmpty()) {
+            return new ResponseNoDataDto("no such entry with that recordId", 204);
+        }
+        else {
+            ManagementRecord managementRecord = optionalManagementRecord.get();
+            if(!managementRecord.getMemberId().equals(memberId)) {
+                return new ResponseNoDataDto("trying to delete entry of other user",403);
+            }
+            else {
+                managementRecordRepository.deleteById(recordId);
+                return new ResponseNoDataDto("OK",200);
+            }
+        }
     }
 
     @Transactional

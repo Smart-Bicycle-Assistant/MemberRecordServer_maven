@@ -42,4 +42,9 @@ public class RidingRecordController {
         return ridingRecordService.postRidingRecord(postRequest,memberId);
     }
 
+    @DeleteMapping(value="/riding_record/delete_entry")
+    public ResponseNoDataDto deleteRidingRecord(@RequestHeader(value="Authorization")String token, @RequestParam Long recordId) {
+        String memberId = TokenProvider.GetUserId(token.substring(token.lastIndexOf(" ")));
+        return ridingRecordService.deleteRidingRecord(memberId,recordId);
+    }
 }

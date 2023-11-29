@@ -55,6 +55,13 @@ public class MemberController {
         String memberId = TokenProvider.GetUserId(token.substring(token.lastIndexOf(" ")));
         return memberService.deleteMember(memberId);
     }
+
+    @PatchMapping(value="/update_member")
+    public ResponseNoDataDto updateMemberData(@RequestHeader(value="Authorization")String token, @RequestBody MemberDto memberDto) {
+        String memberId = TokenProvider.GetUserId(token.substring(token.lastIndexOf(" ")));
+        return memberService.updateMemberData(memberId,memberDto);
+    }
+
     @GetMapping(value="/member/get_user_info")
     public ResponseDataDto getUserInfo(@RequestHeader(value="Authorization")String token)
     {

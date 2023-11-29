@@ -32,7 +32,7 @@ public class RidingLocationController {
     @GetMapping(value = "/riding_location/post_and_get")
     public ResponseDataDto<List<UserLocationResultDto>> postLocationAndGetNearbyUsers(@RequestHeader(value="Authorization")String token, @RequestParam Double longitude, @RequestParam Double latitude, @RequestParam Boolean packMode, @RequestParam Double targetSpeed, @RequestParam Double curSpeed)
     {
-
+        System.out.println(String.format("longitude : %f, latitude : %f, targetSpeed : %f, curSpeed : %f",longitude,latitude,targetSpeed,curSpeed));
 //        System.out.println("token : " + token);
 //        System.out.println("memberId : " + TokenProvider.GetUserId(token.substring(token.lastIndexOf(" "))));
         String memberId = TokenProvider.GetUserId(token.substring(token.lastIndexOf(" ")));

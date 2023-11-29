@@ -112,6 +112,7 @@ public class RidingLocationService {
             RidingLocation ridingLocation = optionalRidingLocation.get();
             ridingLocation.setLongitude(longitude);
             ridingLocation.setLatitude(latitude);
+            ridingLocation.setSpeed(targetSpeed);
             ridingLocationRepository.save(ridingLocation);
         }
         else
