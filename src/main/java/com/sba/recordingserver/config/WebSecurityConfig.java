@@ -1,6 +1,7 @@
 package com.sba.recordingserver.config;
 
 import com.sba.recordingserver.security.JwtAuthenticationFilter;
+import com.sba.recordingserver.security.PasswordEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -44,5 +45,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //                jwtAuthenticationFilter,
 //                CorsFilter.class
 //        );
+    }
+    @Bean
+    public PasswordEncoder PasswordEncoder() {
+        return new PasswordEncoder();
     }
 }

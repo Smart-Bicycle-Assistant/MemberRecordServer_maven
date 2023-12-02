@@ -49,7 +49,8 @@ public class ManagementService {
         List<ManagementRecordSimplifiedDto> listResult = dbResult.stream().map(m->
                         new ManagementRecordSimplifiedDto(m.getManagementTime(),
                                 (m.getGears() == ManagementRecord.CHANGED ? 1:0) +
-                                        (m.getFrontTire() == ManagementRecord.CHANGED  || m.getRearTire() == ManagementRecord.CHANGED? 1 : 0) +
+                                        (m.getFrontTire() == ManagementRecord.CHANGED? 1 : 0) +
+                                        (m.getRearTire() == ManagementRecord.CHANGED? 1 : 0)+
                                         (m.getChain() == ManagementRecord.CHANGED ? 1 : 0) +
                                         (m.getBrakes() == ManagementRecord.CHANGED ? 1 : 0)
                                 ,m.getId()))

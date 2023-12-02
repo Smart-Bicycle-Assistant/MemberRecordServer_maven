@@ -57,7 +57,7 @@ public class MemberController {
     }
 
     @PatchMapping(value="/update_member")
-    public ResponseNoDataDto updateMemberData(@RequestHeader(value="Authorization")String token, @RequestBody MemberDto memberDto) {
+    public ResponseNoDataDto updateMemberData(@RequestHeader(value="Authorization")String token, @RequestBody MemberDataUpdateDto memberDto) {
         String memberId = TokenProvider.GetUserId(token.substring(token.lastIndexOf(" ")));
         return memberService.updateMemberData(memberId,memberDto);
     }

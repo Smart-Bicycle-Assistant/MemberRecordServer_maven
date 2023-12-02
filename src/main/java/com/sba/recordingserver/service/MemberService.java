@@ -5,6 +5,7 @@ import com.sba.recordingserver.entity.Bicycle;
 import com.sba.recordingserver.entity.Member;
 import com.sba.recordingserver.entity.RidingLocation;
 import com.sba.recordingserver.repository.*;
+import com.sba.recordingserver.security.PasswordEncoder;
 import com.sba.recordingserver.security.TokenProvider;
 import com.sba.recordingserver.util.Util;
 import lombok.AllArgsConstructor;
@@ -42,11 +43,14 @@ public class MemberService {
     @Autowired
     private ManagementRecordRepository managementRecordRepository;
 
+    @Autowired
+    PasswordEncoder passwordEncoder;
     private JavaMailSender emailSender;
 
 
 
     public ResponseNoDataDto registerMember(MemberDto member) {
+
         Optional<Member> optionalMember = memberRepository.findById(member.getId());
         if(optionalMember.isPresent())
         {
@@ -55,6 +59,7 @@ public class MemberService {
         }
         else
         {
+            member.setPassword(passwordEncoder.encode(member.getPassword()));
             memberRepository.save(member.toNewEntity());
             System.out.println("register done");
             return new ResponseNoDataDto("Register Success",200);
@@ -71,7 +76,8 @@ public class MemberService {
             System.out.println(loginRequest.getId() + " is not in member db");
             return new ResponseDataDto("no such id",406, null);
         }
-        else if(!optionalMember.get().getPassword().equals(loginRequest.getPassword()))
+
+        else if(!passwordEncoder.matches(loginRequest.getPassword(),optionalMember.get().getPassword()))
         {
             System.out.println("invalid password " + optionalMember.get().getPassword() + " : " + loginRequest.getPassword());
             return new ResponseDataDto("invalid password",406,null);
@@ -119,7 +125,7 @@ public class MemberService {
                     "Please change your password immediately when you login\n"+
                     "Thank you\n");
             Member member = optionalMember.get();
-            member.setPassword(password);
+            member.setPassword(passwordEncoder.encode(password));
             memberRepository.save(member);
             emailSender.send(message);
             return new ResponseNoDataDto("Your new password has been sent to your email",200);
@@ -137,19 +143,20 @@ public class MemberService {
         else
         {
             Member member = optionalMember.get();
-            if(!member.getPassword().equals(request.getPassword())) //wrong password
+
+            if(!passwordEncoder.matches(request.getPassword(), member.getPassword())) //wrong password
             {
                 System.out.println("invalid password " + optionalMember.get().getPassword() + " : " + request.getPassword());
                 return new ResponseNoDataDto("invalid password",406);
             }
-            else if(member.getPassword().equals(request.getNewPassword())) //new password old password same
+            else if(passwordEncoder.matches(request.getNewPassword(), member.getPassword())) //new password old password same
             {
                 System.out.println("new password old password same" + optionalMember.get().getPassword() + " : " + request.getNewPassword());
                 return new ResponseNoDataDto("new password is same as before",406);
             }
             else
             {
-                member.setPassword(request.getNewPassword());
+                member.setPassword(passwordEncoder.encode( request.getNewPassword()));
                 memberRepository.save(member);
                 return new ResponseNoDataDto("your new password has been successfully changed",200);
             }
@@ -208,7 +215,7 @@ public class MemberService {
         }
     }
 
-    public ResponseNoDataDto updateMemberData(String memberId, MemberDto memberDto) {
+    public ResponseNoDataDto updateMemberData(String memberId, MemberDataUpdateDto memberDto) {
         Optional<Member> optionalMember = memberRepository.findById(memberId);
         if(!memberId.equals(memberDto.getId())) {
             return new ResponseNoDataDto("trying to change id",403);
@@ -221,7 +228,6 @@ public class MemberService {
                 Member member = optionalMember.get();
                 member.setNickname(memberDto.getNickname());
                 member.setEmail(memberDto.getEmail());
-                member.setPassword(memberDto.getPassword());
                 return new ResponseNoDataDto("OK",200);
             }
         }
