@@ -1,13 +1,13 @@
 package com.sba.recordingserver.dto;
 
 import com.sba.recordingserver.entity.ManagementRecord;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 @Getter
 @Setter
 @ToString
+@AllArgsConstructor
+@NoArgsConstructor
 public class ManagementRecordPostDto {
 //    aiaiaiaiaiaiaiaiaiaiai aiai
 

@@ -243,6 +243,7 @@ public class ManagementService {
                 Optional<Member> member = memberRepository.findById(memberId);
                 if(member.isPresent()) {
                     Member memberEntity = member.get();
+//                    System.out.println(memberEntity.getBicycleNumber());
                     memberEntity.setBicycleNumber(memberEntity.getBicycleNumber()-1);
                     memberRepository.save(memberEntity);
                 }

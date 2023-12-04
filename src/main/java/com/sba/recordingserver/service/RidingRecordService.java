@@ -77,7 +77,7 @@ public class RidingRecordService {
         }
 
         RidingRecord targetRecord = dbResult.get();
-        System.out.println("targetRecord bicycleId" + targetRecord.getBicycleId());
+        System.out.println("targetRecord bicycleId " + targetRecord.getBicycleId());
         System.out.println(bicycleNo);
         if(!targetRecord.getMemberId().equals(memberId))
         {

@@ -9,6 +9,7 @@ import com.sba.recordingserver.security.PasswordEncoder;
 import com.sba.recordingserver.security.TokenProvider;
 import com.sba.recordingserver.util.Util;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -163,27 +164,6 @@ public class MemberService {
         }
     }
 
-//    public ResponseNoDataDto registerBicycle(BicycleRegisterRequestDto request)
-//    {
-//        Optional<Member> optOwner =  memberRepository.findById(request.getOwnerId());
-//        if(optOwner.isEmpty())
-//        {
-//            return new ResponseNoDataDto("there is no such user id",406);
-//        }
-//        Optional<Bicycle> result =  bicycleRepository.findBicycle(request.getOwnerId(), request.getBicycleName());
-//        if(result.isEmpty())
-//        {
-//            Member owner = optOwner.get();
-//            owner.setBicycleNumber(owner.getBicycleNumber()+1);
-//            memberRepository.save(owner);
-//            bicycleRepository.save(request.toEntity());
-//            return new ResponseNoDataDto("Register Success",200);
-//        }
-//        else
-//        {
-//            return new ResponseNoDataDto("owner has bicycle with same name",406);
-//        }
-//    }
 
     public ResponseNoDataDto deleteMember(String memberId) {
         if(bicycleRepository.findAllByOwnerIdOrderById(memberId).size() != 0) {
@@ -228,8 +208,11 @@ public class MemberService {
                 Member member = optionalMember.get();
                 member.setNickname(memberDto.getNickname());
                 member.setEmail(memberDto.getEmail());
+                memberRepository.save(member);
                 return new ResponseNoDataDto("OK",200);
             }
         }
     }
+
+
 }

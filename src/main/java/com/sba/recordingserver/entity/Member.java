@@ -1,5 +1,6 @@
 package com.sba.recordingserver.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -14,6 +15,7 @@ import javax.persistence.Table;
 @Getter
 @Setter
 @ToString
+
 public class Member {
     @Id @Column private String id;
     @Column private String password;
