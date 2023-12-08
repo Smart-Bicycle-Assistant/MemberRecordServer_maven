@@ -86,7 +86,7 @@ public class MemberService {
         else
         {
             System.out.println("login request for "+loginRequest.getId() + " successfully done");
-            final String token = tokenProvider.create(optionalMember.get());
+            final String token = tokenProvider.create(loginRequest.toEntity());
             return new ResponseDataDto("OK",200,new MemberLoginResultDto(optionalMember.get().getId(),optionalMember.get().getNickname(),optionalMember.get().getEmail(),token));
         }
     }
@@ -121,7 +121,7 @@ public class MemberService {
             message.setFrom("ywha0929@gmail.com");
             message.setTo(optionalMember.get().getEmail());
             message.setSubject("You've reseted your password");
-            message.setText("Your request for reseting your password has been successfully done\n" +
+            message.setText("Your request for reseting your password to account <" + optionalMember.get().getId() + ">has been successfully done\n" +
                     "Your new password is " +password + "\n"+
                     "Please change your password immediately when you login\n"+
                     "Thank you\n");

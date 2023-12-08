@@ -25,6 +25,7 @@ public class ManagementRecord {
     @Column private Integer chain;
     @Column private Integer gears;
     @Column private Long managementTime;
+    public static final Integer Init = 3;
     public static final Integer CHANGED = 2;
     public static final Integer CHECKED = 1;
     public static final Integer NOTHING = 0;

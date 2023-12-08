@@ -48,12 +48,18 @@ public class ManagementService {
         ManagementRecordInfoDto managementRecordInfoDto = new ManagementRecordInfoDto();
         List<ManagementRecordSimplifiedDto> listResult = dbResult.stream().map(m->
                         new ManagementRecordSimplifiedDto(m.getManagementTime(),
-                                (m.getGears() == ManagementRecord.CHANGED ? 1:0) +
-                                        (m.getFrontTire() == ManagementRecord.CHANGED? 1 : 0) +
-                                        (m.getRearTire() == ManagementRecord.CHANGED? 1 : 0)+
-                                        (m.getChain() == ManagementRecord.CHANGED ? 1 : 0) +
-                                        (m.getBrakes() == ManagementRecord.CHANGED ? 1 : 0)
+                                (m.getGears().equals(ManagementRecord.CHANGED) ? 1:0) +
+                                        (m.getFrontTire().equals(ManagementRecord.CHANGED)? 1 : 0) +
+                                        (m.getRearTire().equals(ManagementRecord.CHANGED)? 1 : 0)+
+                                        (m.getChain().equals(ManagementRecord.CHANGED) ? 1 : 0) +
+                                        (m.getBrakes().equals(ManagementRecord.CHANGED) ? 1 : 0)
+                                ,(m.getGears().equals(ManagementRecord.CHECKED) ? 1:0) +
+                                    (m.getFrontTire().equals(ManagementRecord.CHECKED) ? 1 : 0) +
+                                    (m.getRearTire().equals(ManagementRecord.CHECKED) ? 1 : 0) +
+                                    (m.getChain().equals(ManagementRecord.CHECKED) ? 1 : 0) +
+                                    (m.getBrakes().equals(ManagementRecord.CHECKED) ? 1 : 0)
                                 ,m.getId()))
+
                 .collect(Collectors.toList());
         managementRecordInfoDto.setRecords(listResult);
 
@@ -85,8 +91,24 @@ public class ManagementService {
 
         }
         else {
-            bicycleStatusDto.setFrontTireExchangeTime(0L);
-            bicycleStatusDto.setFrontTireLeftLife("no information");
+            thisRecord = managementRecordRepository.findTopByBicycleIdAndFrontTireOrderByManagementTimeDesc(bicycleId,ManagementRecord.Init);
+            if(thisRecord.isPresent())
+            {
+                bicycleStatusDto.setFrontTireExchangeTime(thisRecord.get().getManagementTime());
+                String lifeTime;
+                List<RidingRecord> ridingRecords = ridingRecordRepository.findMatchingRecordAfter(bicycleId,thisRecord.get().getManagementTime());
+                Double ridingDistance = 0d;
+                for(RidingRecord ridingRecord : ridingRecords) {
+                    ridingDistance += ridingRecord.getDistance();
+                }
+                lifeTime = String.format("%.1f / %d (km)",ridingDistance,thisRecord.get().getFrontTireLife());
+                bicycleStatusDto.setFrontTireLeftLife(lifeTime);
+            }
+            else {
+                bicycleStatusDto.setFrontTireExchangeTime(0L);
+                bicycleStatusDto.setFrontTireLeftLife("no information");
+            }
+
         }
         //latestRearTireChange
         thisRecord = managementRecordRepository.findTopByBicycleIdAndRearTireOrderByManagementTimeDesc(bicycleId,ManagementRecord.CHANGED);
@@ -102,8 +124,23 @@ public class ManagementService {
             bicycleStatusDto.setRearTireLeftLife(lifeTime);
         }
         else {
-            bicycleStatusDto.setFrontTireExchangeTime(0L);
-            bicycleStatusDto.setFrontTireLeftLife("no information");
+            thisRecord = managementRecordRepository.findTopByBicycleIdAndRearTireOrderByManagementTimeDesc(bicycleId,ManagementRecord.Init);
+            if(thisRecord.isPresent()) {
+                bicycleStatusDto.setRearTireExchangeTime(thisRecord.get().getManagementTime());
+                String lifeTime;
+                List<RidingRecord> ridingRecords = ridingRecordRepository.findMatchingRecordAfter(bicycleId,thisRecord.get().getManagementTime());
+                Double ridingDistance = 0d;
+                for(RidingRecord ridingRecord : ridingRecords) {
+                    ridingDistance += ridingRecord.getDistance();
+                }
+                lifeTime = String.format("%.1f / %d (km)",ridingDistance,thisRecord.get().getRearTireLife());
+                bicycleStatusDto.setRearTireLeftLife(lifeTime);
+            }
+            else {
+                bicycleStatusDto.setFrontTireExchangeTime(0L);
+                bicycleStatusDto.setFrontTireLeftLife("no information");
+            }
+
         }
         //gearExchange
         thisRecord = managementRecordRepository.findTopByBicycleIdAndGearsOrderByManagementTimeDesc(bicycleId,ManagementRecord.CHANGED);
@@ -111,15 +148,30 @@ public class ManagementService {
             bicycleStatusDto.setGearExchangeTime(thisRecord.get().getManagementTime());
         }
         else {
-            bicycleStatusDto.setGearExchangeTime(0L);
+            thisRecord = managementRecordRepository.findTopByBicycleIdAndGearsOrderByManagementTimeDesc(bicycleId,ManagementRecord.Init);
+            if(thisRecord.isPresent()) {
+                bicycleStatusDto.setGearExchangeTime(thisRecord.get().getManagementTime());
+            }
+            else {
+                bicycleStatusDto.setGearExchangeTime(0L);
+            }
+
         }
         //brakeExchange
         thisRecord = managementRecordRepository.findTopByBicycleIdAndBrakesOrderByManagementTimeDesc(bicycleId,ManagementRecord.CHANGED);
         if(thisRecord.isPresent()) {
+
             bicycleStatusDto.setBrakeExchangeTime(thisRecord.get().getManagementTime());
         }
         else {
-            bicycleStatusDto.setBrakeExchangeTime(0L);
+            thisRecord = managementRecordRepository.findTopByBicycleIdAndBrakesOrderByManagementTimeDesc(bicycleId,ManagementRecord.Init);
+            if(thisRecord.isPresent()) {
+                bicycleStatusDto.setBrakeExchangeTime(thisRecord.get().getManagementTime());
+            }
+            else {
+                bicycleStatusDto.setBrakeExchangeTime(0L);
+            }
+
         }
 
         //Chain
@@ -128,7 +180,14 @@ public class ManagementService {
             bicycleStatusDto.setChainExchangeTime(thisRecord.get().getManagementTime());
         }
         else {
-            bicycleStatusDto.setChainExchangeTime(0L);
+            thisRecord = managementRecordRepository.findTopByBicycleIdAndChainOrderByManagementTimeDesc(bicycleId,ManagementRecord.Init);
+            if(thisRecord.isPresent()) {
+                bicycleStatusDto.setChainExchangeTime(thisRecord.get().getManagementTime());
+            }
+            else {
+                bicycleStatusDto.setChainExchangeTime(0L);
+            }
+
         }
 
         managementRecordInfoDto.setBicycleStatus(bicycleStatusDto);
@@ -164,11 +223,11 @@ public class ManagementService {
     {
         ManagementRecord entity = managementRecordPostDto.toEntity();
         entity.setMemberId(memberId);
-
-        if(managementRecordPostDto.getFrontTire() != 2 && managementRecordPostDto.getFrontTireLife() != 0) {
+        //3도 아니면
+        if(!(managementRecordPostDto.getFrontTire() == 2 || managementRecordPostDto.getFrontTire() == 3) && managementRecordPostDto.getFrontTireLife() != 0) {
             return new ResponseNoDataDto("You have TireLife when Tire hasn't been changed",403);
         }
-        if(managementRecordPostDto.getRearTire() != 2 && managementRecordPostDto.getRearTireLife() != 0) {
+        if(!(managementRecordPostDto.getRearTire() == 2 || managementRecordPostDto.getRearTire() == 3) && managementRecordPostDto.getRearTireLife() != 0) {
             return new ResponseNoDataDto("You have TireLife when Tire hasn't been changed",403);
         }
         managementRecordRepository.save(entity);

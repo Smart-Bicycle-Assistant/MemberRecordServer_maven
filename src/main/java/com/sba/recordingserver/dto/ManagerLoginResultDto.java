@@ -9,9 +9,9 @@ import lombok.ToString;
 @Setter
 @ToString
 @AllArgsConstructor
-public class ManagementRecordSimplifiedDto {
-    private Long managementTime;
-    private Integer numFixed;
-    private Integer numChecked;
-    private Long recordId;
+public class ManagerLoginResultDto {
+    private String id;
+    private String nickname;
+    private String email;
+    private String token;
 }
