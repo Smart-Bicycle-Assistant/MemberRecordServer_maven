@@ -31,6 +31,7 @@ public class MemberDto {
         member.setNickname(this.nickname);
         member.setEmail(this.email);
         member.setBicycleNumber(0);
+        member.setBanned(-1L);
         return member;
     }
 }

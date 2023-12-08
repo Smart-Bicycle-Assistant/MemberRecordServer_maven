@@ -80,6 +80,7 @@ class MemberServiceTest {
         // Arrange
         MemberDto memberDto = new MemberDto("test", "test1234", "nick", "test1234@email.com");
 
+
         // Mock the behavior of memberRepository and passwordEncoder
         when(memberRepository.findById(any())).thenReturn(Optional.of(memberDto.toNewEntity()));
         when(passwordEncoder.matches(any(), any())).thenReturn(true);

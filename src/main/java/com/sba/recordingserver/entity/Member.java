@@ -15,12 +15,12 @@ import javax.persistence.Table;
 @Getter
 @Setter
 @ToString
-
 public class Member {
     @Id @Column private String id;
     @Column private String password;
     @Column private String nickname;
     @Column private String email;
     @Column private Integer bicycleNumber;
+    @Column private Long banned;
 
 }

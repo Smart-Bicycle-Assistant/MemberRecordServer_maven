@@ -85,9 +85,28 @@ public class MemberService {
         }
         else
         {
-            System.out.println("login request for "+loginRequest.getId() + " successfully done");
-            final String token = tokenProvider.create(loginRequest.toEntity());
-            return new ResponseDataDto("OK",200,new MemberLoginResultDto(optionalMember.get().getId(),optionalMember.get().getNickname(),optionalMember.get().getEmail(),token));
+            Long currentTime = System.currentTimeMillis();
+            Member member = optionalMember.get();
+            System.out.println(member.getBanned());
+            System.out.println(currentTime);
+            if(member.getBanned() == -1) {
+                System.out.println("login request for "+loginRequest.getId() + " successfully done");
+                final String token = tokenProvider.create(loginRequest.toEntity());
+                return new ResponseDataDto("OK",200,new MemberLoginResultDto(optionalMember.get().getId(),optionalMember.get().getNickname(),optionalMember.get().getEmail(),token));
+            }
+            else if(member.getBanned() < currentTime) {
+                member.setBanned(-1L);
+                memberRepository.save(member);
+                System.out.println("remove ban");
+                System.out.println("login request for "+loginRequest.getId() + " successfully done");
+                final String token = tokenProvider.create(loginRequest.toEntity());
+                return new ResponseDataDto("OK",200,new MemberLoginResultDto(optionalMember.get().getId(),optionalMember.get().getNickname(),optionalMember.get().getEmail(),token));
+            }
+            else {
+                System.out.println("this guy is banned");
+                return new ResponseDataDto("you are banned until " + member.getBanned(),403,null);
+            }
+
         }
     }
 
