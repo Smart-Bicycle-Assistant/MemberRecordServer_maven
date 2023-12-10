@@ -47,4 +47,5 @@ public class RidingRecordController {
         String memberId = TokenProvider.GetUserId(token.substring(token.lastIndexOf(" ")));
         return ridingRecordService.deleteRidingRecord(memberId,recordId);
     }
+
 }

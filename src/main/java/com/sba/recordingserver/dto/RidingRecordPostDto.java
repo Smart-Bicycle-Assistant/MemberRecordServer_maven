@@ -15,6 +15,7 @@ public class RidingRecordPostDto {
     private Double avgSpeed;
     private Double maxSpeed;
     private Long ridingDuration;
+    private String userList;
     //no map
 
 
@@ -26,6 +27,7 @@ public class RidingRecordPostDto {
         ridingRecord.setAvgSpeed(avgSpeed);
         ridingRecord.setMaxSpeed(maxSpeed);
         ridingRecord.setRidingDuration(ridingDuration);
+        ridingRecord.setUserList(userList);
         ridingRecord.setMap(map);
         System.out.println("toEntity : " + ridingRecord.getMap());
         return ridingRecord;

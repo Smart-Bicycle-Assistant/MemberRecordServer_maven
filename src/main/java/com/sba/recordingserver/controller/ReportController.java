@@ -50,4 +50,10 @@ public class ReportController {
         String managerId = TokenProvider.GetUserId(token.substring(token.lastIndexOf(" ")));
         return reportService.getAllUserInfo(managerId);
     }
+
+    @PatchMapping("report/set_solved")
+    private ResponseNoDataDto setSolved(@RequestHeader(value="Authorization")String token, @RequestParam Integer status, @RequestParam Long reportId) {
+        String managerId = TokenProvider.GetUserId(token.substring(token.lastIndexOf(" ")));
+        return reportService.setSolvedStatus(managerId,status,reportId);
+    }
 }

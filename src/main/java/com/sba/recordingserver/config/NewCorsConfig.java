@@ -22,7 +22,8 @@ public class NewCorsConfig {
                 "http://localhost:5174",
                 "https://localhost:5174",
                 "https://localhost:5173/",
-                "https://sba-frontend-web.vercel.app/"
+                "https://sba-frontend-web.vercel.app/",
+                "https://sba-frontend-admin.vercel.app/"
             ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));

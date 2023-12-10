@@ -129,7 +129,7 @@ public class RidingLocationService {
                 return new ResponseDataDto<>("No Matching Data",204,null);
             }
             List<UserLocationResultDto> result = dbResult.stream().map(m->
-                            new UserLocationResultDto(memberRepository.findById(m.getId()).get().getNickname(),m.getLongitude(),m.getLatitude()))
+                            new UserLocationResultDto(m.getId() ,memberRepository.findById(m.getId()).get().getNickname(),m.getLongitude(),m.getLatitude()))
                     .collect(Collectors.toList());
             return new ResponseDataDto<>("OK : Result Count = "+result.size(),200,result);
         }

@@ -19,4 +19,5 @@ public class Report {
     @Column private String target;
     @Column private Long time;
     @Lob private String content;
+    @Column private Integer solved;
 }

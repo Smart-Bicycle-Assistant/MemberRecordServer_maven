@@ -24,5 +24,6 @@ public class RidingRecord {
     @Column private Long ridingDuration;
     @Lob private String map;
     @Lob private String listSpeed;
+    @Lob private String userList;
 
 }

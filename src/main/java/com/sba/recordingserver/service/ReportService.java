@@ -110,4 +110,20 @@ public class ReportService {
         List<Member> allUsers = memberRepository.findAll();
         return new ResponseDataDto("OK",200,allUsers);
     }
+    public ResponseNoDataDto setSolvedStatus(String manager, Integer status, Long reportId) {
+        Optional<Manager> optionalManager = managerRepository.findById(manager);
+        if(optionalManager.isEmpty()) {
+            System.out.println("Someone who's not manager trying to view reports");
+            return new ResponseNoDataDto("you are not manager",403);
+        }
+        Optional<Report> optionalReport = reportRepository.findById(reportId) ;
+        if(optionalReport.isEmpty()) {
+            System.out.println("no such report");
+            return new ResponseNoDataDto("no such report with that reportId",206);
+        }
+        Report report = optionalReport.get();
+        report.setSolved(status);
+        reportRepository.save(report);
+        return new ResponseNoDataDto("OK",200);
+    }
 }

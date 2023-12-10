@@ -12,11 +12,10 @@ import javax.persistence.Lob;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ReportDto {
-    @Column
+
     private String reporter;
-    @Column private String target;
-    @Column private Long time;
-    @Lob
+    private String target;
+    private Long time;
     private String content;
 
     public Report toEntity() {
@@ -25,6 +24,7 @@ public class ReportDto {
         report.setTarget(target);
         report.setTime(time);
         report.setContent(content);
+        report.setSolved(0);
         return report;
     }
 }

@@ -11,6 +11,7 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 public class UserLocationResultDto {
+    private String id;
     private String nickname;
     private Double longitude;
     private Double latitude;
